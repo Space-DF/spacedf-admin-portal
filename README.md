@@ -112,6 +112,18 @@ npm run dev
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+### Using SpaceDF UI components
+
+This project is configured to use the SpaceDF shadcn/ui registry (`@spacedf`) defined in `components.json`.
+
+To install a new UI component from the SpaceDF registry (for example, `button`), run:
+
+```bash
+npx shadcn@latest add @spacedf/button
+```
+
+You can replace `button` with any other component name exposed by the SpaceDF registry.
+
 ## 📜 Available Scripts
 
 - `yarn dev` - Start development server

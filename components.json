@@ -18,5 +18,9 @@
     "lib": "@/lib",
     "hooks": "@/hooks"
   },
-  "registries": {}
+  "registries": {
+    "@spacedf": {
+      "url": "https://spacedf-ui-registry.vercel.app/r/{name}"
+    }
+  }
 }

@@ -1,6 +1,7 @@
 services:
   web:
-    image: kinhdev24/spacedf-admin-portal:latest
+    # Image built from the Dockerfile in the current directory. Replace with your own Docker image if needed.
+    image: ''
     environment:
       #These variables for next-auth (required)
       NEXTAUTH_URL: ${PORTAL_NEXTAUTH_URL}

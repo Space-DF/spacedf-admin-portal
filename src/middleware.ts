@@ -18,21 +18,33 @@ export default async function middleware(request: NextRequest) {
 
   if (PUBLIC_FILE.test(url.pathname) || url.pathname.includes('_next')) return;
 
-  // Step 1: Use the incoming request (example)
   const defaultLocale = (cookies().get('NEXT_LOCALE')?.value || 'en') as Locale;
 
-  let [, locale, ...segments] = request.nextUrl.pathname.split('/');
+  const pathname = request.nextUrl.pathname;
+  const pathnameSegments = pathname.split('/').filter(Boolean);
+  const firstSegment = pathnameSegments[0] || '';
 
-  const isLocaleValid = locales.includes(locale as Locale);
+  const isLocaleValid = locales.includes(firstSegment as Locale);
 
-  // If the first segment isn't a valid locale, default to the defaultLocale
+  // If the first segment isn't a valid locale, redirect to the same URL with default locale
   if (!isLocaleValid) {
-    locale = defaultLocale;
-    segments = url.pathname.split('/').filter(Boolean); // Reset segments without locale
+    const pathWithoutLocale =
+      pathnameSegments.length > 0 ? `/${pathnameSegments.join('/')}` : '/';
+    const redirectUrl = new URL(
+      `/${defaultLocale}${pathWithoutLocale}`,
+      request.url,
+    );
+    // Preserve query parameters
+    redirectUrl.search = request.nextUrl.search;
+    return NextResponse.redirect(redirectUrl);
   }
 
+  const locale = firstSegment as Locale;
+  const segments = pathnameSegments.slice(1);
+
   // Construct the path without locale for matching
-  const pathWithoutLocale = `/${segments.join('/')}`;
+  const pathWithoutLocale =
+    segments.length > 0 ? `/${segments.join('/')}` : '/';
 
   // Step 2: Check authentication
   const session = await readSession();
@@ -62,11 +74,7 @@ export default async function middleware(request: NextRequest) {
     defaultLocale,
   });
 
-  request.nextUrl.pathname = `/${locale}/${segments.join('/') || ''}`;
-
-  const response = handleI18nRouting(request);
-
-  return response;
+  return handleI18nRouting(request);
 }
 
 export const config = {

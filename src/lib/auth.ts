@@ -34,7 +34,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         }
         try {
           const response = await api.post<AuthToken>(
-            '/console/auth/login',
+            '/bootstrap/auth/login',
             credentials,
           );
           setServerSession(
@@ -64,7 +64,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     async jwt({ token, user, trigger, session }) {
       if (trigger === 'update') {
         const newRefreshToken = await api.post<JWT>(
-          '/console/auth/organizations/switch',
+          '/bootstrap/auth/organizations/switch',
           {
             organization: session.organization,
             refresh: token.refresh,

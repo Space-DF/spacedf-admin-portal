@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { encode } from 'next-auth/jwt';
+import { NextRequest, NextResponse } from 'next/server';
 
 import api from '@/lib/api';
 import { auth } from '@/lib/auth';
@@ -77,7 +77,7 @@ export const POST = async (request: NextRequest) => {
     const refreshPromise = (async () => {
       try {
         const data = await api.post(
-          '/console/auth/refresh-token',
+          '/bootstrap/auth/refresh-token',
           {
             refresh: refreshToken,
           },

@@ -6,7 +6,7 @@ import { handleError } from '@/utils/error';
 
 export const GET = async () => {
   try {
-    const response = await api.get(`/console/user/me`);
+    const response = await api.get(`/bootstrap/user/me`);
     return NextResponse.json(response);
   } catch (error) {
     return handleError(error);
@@ -20,7 +20,7 @@ export const PUT = async (request: NextRequest) => {
     const file = formData.get('avatar') as File;
     if (file && typeof file !== 'string') {
       const data = await api.get<{ presigned_url: string; file_name: string }>(
-        '/console/presigned-url',
+        '/bootstrap/presigned-url',
       );
       const presignedUrl = data.presigned_url;
       const fileBuffer = await file.arrayBuffer();
@@ -43,7 +43,7 @@ export const PUT = async (request: NextRequest) => {
     const location = formData.get('location') as string;
     const title = formData.get('title') as string;
 
-    const response = await api.put(`/console/user/me`, {
+    const response = await api.put(`/bootstrap/user/me`, {
       first_name,
       last_name,
       company_name,

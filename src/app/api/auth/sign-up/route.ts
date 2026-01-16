@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   try {
     const body: SignUpCredentials = await req.json();
     const response = await api.post<SignUpResponse>(
-      '/console/auth/register',
+      '/bootstrap/auth/register',
       body,
     );
     return NextResponse.json(response);

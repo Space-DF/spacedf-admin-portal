@@ -13,7 +13,7 @@ export async function POST(
   try {
     const body: SignUpCredentials = await req.json();
     const response = await api.post<SignUpResponse>(
-      '/console/google/login',
+      '/bootstrap/google/login',
       body,
     );
     return NextResponse.json(response);

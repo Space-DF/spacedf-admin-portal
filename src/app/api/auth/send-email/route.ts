@@ -10,7 +10,7 @@ export const POST = async (request: NextRequest) => {
     if (!email) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
-    await api.post('/console/auth/send-email-confirm', { email });
+    await api.post('/bootstrap/auth/send-email-confirm', { email });
     return NextResponse.json({ message: 'Email sent' }, { status: 200 });
   } catch (error) {
     return handleError(error);

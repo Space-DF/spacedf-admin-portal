@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
-    const response = await api.post('/console/auth/forget-password', {
+    const response = await api.post('/bootstrap/auth/forget-password', {
       password,
       token,
     });

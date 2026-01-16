@@ -13,12 +13,15 @@ interface SocialPayload {
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const body: SocialPayload = await req.json();
-    const response = await fetch(`${AUTH_API}/api/console/auth/login/socials`, {
-      method: 'POST',
-      body: JSON.stringify(body),
-      headers: { 'Content-Type': 'application/json' },
-      redirect: 'manual',
-    });
+    const response = await fetch(
+      `${AUTH_API}/api/bootstrap/auth/login/socials`,
+      {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+        redirect: 'manual',
+      },
+    );
     if (response.status === 302) {
       const redirectUrl = response.headers.get('location');
       return NextResponse.json({ redirectUrl });

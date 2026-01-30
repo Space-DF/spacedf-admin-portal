@@ -49,7 +49,7 @@ const DeviceModelList: React.FC<Props> = ({
         <span className='text-brand-component-text-dark text-xs font-medium w-40'>
           {brand.name}
         </span>
-        <div className='text-brand-component-text-info text-xs font-semibold py-px px-2 bg-[#CCE9FF] rounded-sm'>
+        <div className='text-brand-component-text-info text-xs font-semibold py-px px-2 bg-[#CCE9FF] rounded-sm max-w-28'>
           {capitalizeFirstLetter(brand.device_type)}
         </div>
       </div>

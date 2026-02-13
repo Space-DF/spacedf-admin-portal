@@ -1,0 +1,15 @@
+services:
+  web:
+    # Image built from the Dockerfile in the current directory. Replace with your own Docker image if needed.
+    image: ''
+    environment:
+      #These variables for next-auth (required)
+      NEXTAUTH_URL: ${PORTAL_NEXTAUTH_URL}
+      NEXTAUTH_SECRET: ${PORTAL_NEXTAUTH_SECRET}
+
+      #These variables for API endpoint
+      AUTH_API: ${PORTAL_AUTH_API}
+
+    ports:
+      - '3001:3001'
+    restart: unless-stopped

@@ -1,30 +1,39 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import queryString from 'query-string';
 import { toast } from 'sonner';
-import useSWRMutation from 'swr/mutation';
 
 import apiClient from '@/lib/api-client';
 
-import { TableDevice } from '@/types';
+import { DEVICE_QUERY_KEY } from '@/constants/query-keys';
 
-export async function updateDevice(
-  url: string,
-  { arg }: { arg: Partial<TableDevice> },
-) {
-  return apiClient.patch(url, {
-    ...arg,
-    network_server: arg.network_server?.id,
-  });
-}
+import { UpdateDevicePayload } from '@/types';
 
-export const useUpdateDevice = () => {
-  const { deviceId } = useParams<{
-    deviceId: string;
-  }>();
+export const useUpdateDevice = (
+  deviceId: string,
+  { successMessage }: { successMessage?: string } = {},
+) => {
+  const { slugName } = useParams<{ slugName: string }>();
   const t = useTranslations('device-detail');
-  return useSWRMutation(`/api/devices/${deviceId}`, updateDevice, {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ network_server, ...arg }: UpdateDevicePayload) =>
+      apiClient.patch(
+        queryString.stringifyUrl({
+          url: `/api/devices/${deviceId}`,
+          query: { slugName },
+        }),
+        {
+          ...arg,
+          network_server: network_server?.id,
+        },
+      ),
     onSuccess: () => {
-      toast.success(t('update_device_success'));
+      toast.success(successMessage ?? t('update_device_success'));
+      queryClient.invalidateQueries({
+        queryKey: [...DEVICE_QUERY_KEY, deviceId, slugName],
+      });
     },
     onError: () => {
       toast.error(t('update_device_error'));

@@ -2,10 +2,12 @@
 
 import { useTranslations } from 'next-intl';
 
+import { cn } from '@/lib/utils';
+
 import { GoogleIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 
-const AuthenticateWithGoogle = () => {
+const AuthenticateWithGoogle = ({ className }: { className?: string }) => {
   const t = useTranslations('auth');
 
   const handleSignInGoogle = async () => {
@@ -25,19 +27,18 @@ const AuthenticateWithGoogle = () => {
   };
 
   return (
-    <div className='w-full animate-opacity-display-effect self-start'>
-      <p className='mb-2 text-sm font-medium'>
-        {t('continue_with_social_account')}
-      </p>
-      <Button
-        variant='outline'
-        className='h-12 w-full items-center gap-2 rounded-lg border-brand-stroke-dark-soft font-medium dark:border-brand-stroke-outermost'
-        onClick={handleSignInGoogle}
-      >
-        <GoogleIcon />
-        {t('continue_with_provider', { provider: 'Google' })}
-      </Button>
-    </div>
+    <Button
+      type='button'
+      variant='outline'
+      className={cn(
+        'h-9 w-full gap-2 rounded-xl border-brand-component-stroke-dark-soft bg-brand-component-fill-light-fixed text-[14px] font-semibold text-brand-component-text-dark shadow-button-base hover:bg-brand-component-hover-gray-soft hover:text-brand-component-text-dark',
+        className,
+      )}
+      onClick={handleSignInGoogle}
+    >
+      <GoogleIcon />
+      {t('continue_with_provider', { provider: 'Google' })}
+    </Button>
   );
 };
 

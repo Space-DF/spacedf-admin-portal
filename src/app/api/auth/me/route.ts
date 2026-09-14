@@ -53,7 +53,6 @@ export const PUT = async (request: NextRequest) => {
     });
     return NextResponse.json(response);
   } catch (error) {
-    console.log(error);
     return handleError(error);
   }
 };

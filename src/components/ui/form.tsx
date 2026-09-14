@@ -2,6 +2,7 @@
 
 import * as LabelPrimitive from '@radix-ui/react-label';
 import { Slot } from '@radix-ui/react-slot';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import {
   Controller,
@@ -81,7 +82,7 @@ const FormItem = React.forwardRef<
 
   return (
     <FormItemContext.Provider value={{ id }}>
-      <div ref={ref} className={cn('space-y-[6px]', className)} {...props} />
+      <div ref={ref} className={cn('space-y-1.5', className)} {...props} />
     </FormItemContext.Provider>
   );
 });
@@ -100,7 +101,7 @@ const FormLabel = React.forwardRef<
       ref={ref}
       className={cn(
         error && 'text-destructive',
-        'text-brand-text-gray dark:text-brand-dark-text-gray',
+        'text-body font-semibold text-brand-component-text-dark',
         className,
       )}
       htmlFor={formItemId}
@@ -162,11 +163,15 @@ const FormMessage = React.forwardRef<
   React.HTMLAttributes<HTMLParagraphElement> & { icon?: React.ReactNode }
 >(({ className, children, icon, ...props }, ref) => {
   const { error, formMessageId } = useFormField();
+  const t = useTranslations('error');
   const body = error ? String(error?.message) : children;
 
   if (!body) {
     return null;
   }
+
+  const translatedBody =
+    typeof body === 'string' && t.has(body) ? t(body) : body;
 
   return (
     <p
@@ -179,7 +184,7 @@ const FormMessage = React.forwardRef<
       {...props}
     >
       {icon}
-      {body}
+      {translatedBody}
     </p>
   );
 });

@@ -151,7 +151,6 @@ api.setInterceptors({
   onRequest: async (config) => {
     const session = await readSession();
     const token = session?.user?.access;
-
     if (token) {
       config.headers = {
         ...config.headers,

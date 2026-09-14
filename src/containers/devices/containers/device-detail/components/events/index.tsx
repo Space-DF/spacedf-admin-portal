@@ -1,7 +1,6 @@
 'use client';
 
 import dayjs from 'dayjs';
-import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,9 +15,12 @@ const formatTimestamp = (timestamp: string) => {
   return parsed.format('HH:mm:ss');
 };
 
-const EventsTab = () => {
+interface Props {
+  deviceId: string;
+}
+
+const EventsTab = ({ deviceId }: Props) => {
   const t = useTranslations('device-detail');
-  const { deviceId } = useParams<{ deviceId: string }>();
   const { data: events = [], isLoading } = useDeviceEvents(deviceId);
 
   if (isLoading) {

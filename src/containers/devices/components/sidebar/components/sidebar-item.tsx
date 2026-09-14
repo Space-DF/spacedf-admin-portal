@@ -1,12 +1,12 @@
 'use client';
 import Image from 'next/image';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import React from 'react';
 
 import { cn } from '@/lib/utils';
 
 import { SidebarMenuItem } from '@/components/ui/sidebar';
+
+import { Link, usePathname } from '@/i18n/routing';
 
 interface Props {
   label: string;
@@ -24,31 +24,32 @@ const SidebarItem: React.FC<Props> = ({ open, label, href, icon }) => {
         key={label}
         href={href}
         className={cn(
-          'flex items-center gap-x-2 text-brand-component-text-gray text-sm font-[500] p-2 transition-all rounded-md group mx-2 hover:bg-brand-component-fill-dark-soft duration-150',
+          'flex items-center gap-x-2 text-brand-component-text-dark text-sm font-medium p-2 transition-all rounded-[10px] group hover:bg-brand-component-fill-dark-soft duration-150 ',
           isFocus && 'bg-brand-component-fill-dark-soft',
+          !open && 'mx-auto w-fit',
         )}
       >
         <div
           className={cn(
-            'flex  justify-center items-center w-full',
-            open && 'justify-between',
+            'flex justify-center items-center',
+            open && 'w-full justify-between',
           )}
         >
           <div className='flex items-center gap-x-2'>
             <Image
               src={icon}
-              width={20}
-              height={20}
+              width={16}
+              height={16}
               alt='sidebar-icon'
               className={cn(
-                'group-hover:text-brand-component-text-dark',
+                'group-hover:text-brand-component-text-dark text-brand-component-text-dark',
                 isFocus && 'text-brand-component-text-dark',
               )}
             />
             {open && (
               <span
                 className={cn(
-                  'group-hover:text-brand-component-text-dark',
+                  'group-hover:text-brand-component-text-dark text-brand-component-text-dark text-[14px]',
                   isFocus && 'text-brand-component-text-dark',
                 )}
               >

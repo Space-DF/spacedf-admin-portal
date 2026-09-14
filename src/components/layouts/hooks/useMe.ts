@@ -1,11 +1,16 @@
-import useSWR from 'swr';
+import { useQuery } from '@tanstack/react-query';
 
 import apiClient from '@/lib/api-client';
 
+import { ME_QUERY_KEY } from '@/constants/query-keys';
+
 import { User } from '@/types';
 
-const getMe = async (url: string) => apiClient.get<User>(url);
+export const getMe = async () => apiClient.get<User>('/api/auth/me');
 
-export const useMe = () => {
-  return useSWR<User>('/api/auth/me', getMe);
-};
+export const useMe = () =>
+  useQuery<User>({
+    queryKey: ME_QUERY_KEY,
+    queryFn: getMe,
+    refetchOnWindowFocus: false,
+  });

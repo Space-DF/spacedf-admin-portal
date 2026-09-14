@@ -9,11 +9,17 @@ interface ResendCodeBtnProps {
   email: string;
 }
 
+const formatCountdown = (totalSeconds: number) => {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+};
+
 export default function ResendCodeBtn({ email }: ResendCodeBtnProps) {
   const t = useTranslations('auth');
   const [seconds, setSeconds] = useState(60);
   const [isResendEnabled, setIsResendEnabled] = useState(false);
-  const { trigger: sendOtp, isMutating: isSendingOtp } = useSendOtp();
+  const { mutateAsync: sendOtp, isPending: isSendingOtp } = useSendOtp();
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (seconds > 0) {
@@ -33,14 +39,22 @@ export default function ResendCodeBtn({ email }: ResendCodeBtnProps) {
     toast.success(t('we_sent_a_code_to_email', { email }));
   };
   return (
-    <Button
-      className='h-12 w-full items-center gap-2 rounded-lg border border-brand-component-stroke-dark text-sm font-semibold dark:border-brand-component-stroke-light'
-      variant='outline'
-      disabled={!isResendEnabled}
-      onClick={handleResendOTP}
-      loading={isSendingOtp}
-    >
-      {t.rich('resend_code', { time: seconds })}
-    </Button>
+    <div className='flex items-center justify-center'>
+      <span className='text-[14px] font-medium text-brand-component-text-gray'>
+        {t('didnt_receive_a_code')}
+      </span>
+      <Button
+        type='button'
+        variant='outline'
+        className='h-8 gap-2 rounded-[10px] border-0 bg-transparent px-1 text-xs font-semibold text-primary shadow-none hover:bg-transparent hover:opacity-80 disabled:opacity-100'
+        disabled={!isResendEnabled}
+        onClick={handleResendOTP}
+        loading={isSendingOtp}
+      >
+        {seconds > 0
+          ? t('resend_with_time', { time: formatCountdown(seconds) })
+          : t('resend')}
+      </Button>
+    </div>
   );
 }

@@ -9,7 +9,7 @@ import { Control } from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
 
-import { Pen } from '@/components/icons';
+import { Pen, Warning } from '@/components/icons';
 import {
   FormControl,
   FormField,
@@ -34,14 +34,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { DeviceModelCombobox } from '@/containers/devices/components/add-device-modal/components/device-model-combobox';
 import { EuiDeviceTable } from '@/containers/devices/components/add-device-modal/validator';
 
 import { Link } from '@/i18n/routing';
-import { countTwoDigitNumbers, formatValueEUI } from '@/utils/format-eui';
+import { capitalizeFirstLetter } from '@/utils/capitalizeFirstLetter';
+import {
+  countTwoDigitNumbers,
+  formatValueEUI,
+  normalizeEUIInput,
+} from '@/utils/format-eui';
 
 import { NetworkServer, TableDevice } from '@/types';
 
-type DeviceTableProps = EuiDeviceTable['eui'][0];
+const isLorawanDevice = (device: TableDevice) =>
+  !!device.dev_eui || !!device.join_eui || !!device.network_server;
 
 export const useDeviceColumn = (
   control: Control<EuiDeviceTable>,
@@ -75,7 +82,7 @@ export const useDeviceColumn = (
       if (isLoading) {
         return <Skeleton className='w-full h-5' />;
       }
-      return isEdit(row.original.id) ? (
+      return isEdit(row.original.id) && !!row.original[fieldName] ? (
         <FormField
           control={control}
           name={`eui.${row.index}.${fieldName}`}
@@ -89,18 +96,11 @@ export const useDeviceColumn = (
                     className={cn('pr-14', !icon && 'pl-3')}
                     placeholder={placeholder}
                     {...field}
-                    value={field.value}
+                    value={field.value ?? ''}
                     onChange={(e) => {
-                      const rawValue = e.target.value
-                        .replace(/\s/g, '')
-                        .toUpperCase();
-                      const binaryValue = formatValueEUI(rawValue);
-                      if (
-                        /^[0-9A-Fa-f]*$/.test(rawValue) &&
-                        countTwoDigitNumbers(binaryValue) <= 8 &&
-                        binaryValue.split(' ').length <= 8
-                      ) {
-                        field.onChange(binaryValue);
+                      const nextValue = normalizeEUIInput(e.target.value);
+                      if (nextValue !== null) {
+                        field.onChange(nextValue);
                       }
                     }}
                     suffixCpn={
@@ -123,7 +123,7 @@ export const useDeviceColumn = (
         />
       ) : (
         <div className='h-10 flex flex-col justify-center'>
-          <span className='text-brand-component-text-gray text-xs font-medium'>
+          <span className='text-brand-component-text-dark text-xs font-medium'>
             {formatValueEUI(row.original[fieldName])}
           </span>
         </div>
@@ -135,33 +135,25 @@ export const useDeviceColumn = (
   const renderTextField = useCallback(
     (
       row: Row<TableDevice>,
-      fieldName: keyof Omit<DeviceTableProps, 'is_published'>,
+      fieldName: 'claim_code' | 'app_key' | 'serial_number',
       placeholder: string,
-      icon?: JSX.Element,
+      canEdit = true,
     ) => {
       if (isLoading) {
         return <Skeleton className='w-full h-5' />;
       }
-      return isEdit(row.original.id) ? (
+      return isEdit(row.original.id) && canEdit ? (
         <FormField
           control={control}
           name={`eui.${row.index}.${fieldName}`}
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                {icon ? (
-                  <InputWithIcon
-                    prefixCpn={icon}
-                    placeholder={placeholder}
-                    {...field}
-                  />
-                ) : (
-                  <Input
-                    className='border-none h-10'
-                    placeholder={placeholder}
-                    {...field}
-                  />
-                )}
+                <Input
+                  placeholder={placeholder}
+                  {...field}
+                  value={field.value ?? ''}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -169,8 +161,8 @@ export const useDeviceColumn = (
         />
       ) : (
         <div className='h-10 flex flex-col justify-center'>
-          <span className='text-brand-component-text-gray text-base font-medium'>
-            {row.original[fieldName] as string}
+          <span className='text-brand-component-text-dark text-xs font-medium'>
+            {row.original[fieldName] || '-'}
           </span>
         </div>
       );
@@ -180,6 +172,75 @@ export const useDeviceColumn = (
 
   const columns: (ColumnDef<TableDevice> & { accessorKey: string })[] = useMemo(
     () => [
+      {
+        accessorKey: 'device_model',
+        header: 'Device Model',
+        cell: ({ row }) => {
+          if (isLoading) {
+            return <Skeleton className='w-full h-5' />;
+          }
+          if (isEdit(row.original.id)) {
+            return (
+              <FormField
+                control={control}
+                name={`eui.${row.index}.device_model`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <DeviceModelCombobox
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        placeholder={t('select_device_model')}
+                        contentClassName='w-[var(--radix-popover-trigger-width)]'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            );
+          }
+          return (
+            <div className='h-10 flex items-center gap-2'>
+              {row.original.is_deactivated && (
+                <TooltipProvider delayDuration={0}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className='shrink-0'>
+                        <Warning className='size-4' />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent className='max-w-60 space-y-1'>
+                      <p className='font-semibold'>
+                        {t('over_free_plan_limit')}
+                      </p>
+                      <p className='leading-relaxed'>
+                        {t('over_free_plan_limit_hint')}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+              <span className='text-brand-component-text-dark text-xs font-medium'>
+                {`${capitalizeFirstLetter(row.original.device_profile.manufacturer_name)} - ${capitalizeFirstLetter(row.original.device_profile.device_type)}`}
+              </span>
+            </div>
+          );
+        },
+        size: 220,
+      },
+      {
+        accessorKey: 'serial_number',
+        header: t('serial_number'),
+        cell: ({ row }) =>
+          renderTextField(
+            row,
+            'serial_number',
+            t('serial_number'),
+            !isLorawanDevice(row.original),
+          ),
+        size: 198,
+      },
       {
         accessorKey: 'dev_eui',
         header: 'Dev EUI',
@@ -225,7 +286,12 @@ export const useDeviceColumn = (
           if (isLoading) {
             return <Skeleton className='w-full h-5' />;
           }
-          return renderTextField(row, 'app_key', 'App Key');
+          return renderTextField(
+            row,
+            'app_key',
+            'App Key',
+            isLorawanDevice(row.original),
+          );
         },
         size: 198,
       },
@@ -236,7 +302,7 @@ export const useDeviceColumn = (
           if (isLoading) {
             return <Skeleton className='w-full h-5' />;
           }
-          if (isEdit(row.original.id)) {
+          if (isEdit(row.original.id) && !!row.original.network_server) {
             return (
               <FormField
                 control={control}
@@ -249,7 +315,7 @@ export const useDeviceColumn = (
                         onValueChange={field.onChange}
                       >
                         <SelectTrigger
-                          className='w-full bg-brand-component-fill-dark-soft h-10'
+                          className='w-full bg-brand-component-fill-dark-soft h-9'
                           icon={<ChevronDown className='size-4 opacity-50' />}
                         >
                           <SelectValue />
@@ -266,7 +332,7 @@ export const useDeviceColumn = (
                                     height={16}
                                     className='rounded-md object-cover flex justify-center items-center'
                                   />
-                                  <span className='text-brand-component-text-gray text-xs font-semibold'>
+                                  <span className='text-brand-component-text-dark text-xs font-semibold'>
                                     {server.name}
                                   </span>
                                 </div>
@@ -284,18 +350,22 @@ export const useDeviceColumn = (
           }
           return (
             <div className='h-10 flex flex-col justify-center'>
-              <div className='flex items-center space-x-2'>
-                <Image
-                  src={row.original.network_server.logo}
-                  alt={row.original.network_server.name}
-                  width={16}
-                  height={16}
-                  className='rounded-md object-cover flex justify-center items-center'
-                />
-                <span className='text-brand-component-text-gray text-xs font-semibold'>
-                  {row.original.network_server.name}
-                </span>
-              </div>
+              {row.original.network_server ? (
+                <div className='flex items-center space-x-2'>
+                  <Image
+                    src={row.original.network_server.logo}
+                    alt={row.original.network_server.name}
+                    width={16}
+                    height={16}
+                    className='rounded-md object-cover flex justify-center items-center'
+                  />
+                  <span className='text-brand-component-text-dark text-xs font-semibold'>
+                    {row.original.network_server.name}
+                  </span>
+                </div>
+              ) : (
+                '-'
+              )}
             </div>
           );
         },
@@ -330,7 +400,11 @@ export const useDeviceColumn = (
                 <Switch
                   checked={field.value}
                   onCheckedChange={field.onChange}
-                  disabled={isLoading || !isEdit(row.original.id)}
+                  disabled={
+                    isLoading ||
+                    !isEdit(row.original.id) ||
+                    row.original.is_deactivated
+                  }
                 />
               </FormItem>
             )}
@@ -341,24 +415,41 @@ export const useDeviceColumn = (
       {
         accessorKey: 'status',
         header: t('status'),
-        cell({ getValue }) {
+        cell({ getValue, row }) {
           if (isLoading) {
             return <Skeleton className='w-full h-5' />;
           }
+          const deactivatedClassName =
+            row.original.is_deactivated && 'text-brand-component-text-disabled';
           return (
             <div className='h-10 flex flex-col justify-center'>
               {getValue() === 'active' && (
-                <span className='text-brand-component-text-positive font-medium'>
+                <span
+                  className={cn(
+                    'text-brand-component-text-positive font-medium',
+                    deactivatedClassName,
+                  )}
+                >
                   Active
                 </span>
               )}
               {getValue() === 'inactive' && (
-                <span className='text-brand-component-text-negative font-medium'>
+                <span
+                  className={cn(
+                    'text-brand-component-text-negative font-medium',
+                    deactivatedClassName,
+                  )}
+                >
                   Inactive
                 </span>
               )}
               {getValue() === 'in_inventory' && (
-                <span className='text-brand-component-text-secondary font-medium'>
+                <span
+                  className={cn(
+                    'text-brand-component-text-secondary font-medium',
+                    deactivatedClassName,
+                  )}
+                >
                   In Inventory
                 </span>
               )}
@@ -402,15 +493,15 @@ export const useDeviceColumn = (
                     ) : (
                       <>
                         <Link
-                          href={`/devices/${row.original.id}`}
+                          href={`/organizations/${slugName}/devices/${row.original.id}`}
                           className='border border-brand-component-stroke-dark-soft rounded-lg p-2 disabled:opacity-55'
                         >
                           <Eye className='size-4 text-brand-fill-outermost' />
                         </Link>
                         <button
-                          className='border border-brand-component-stroke-dark-soft rounded-lg p-2'
+                          className='border border-brand-component-stroke-dark-soft rounded-lg p-2 disabled:border-brand-component-stroke-disabled disabled:opacity-[0.32]'
                           onClick={() => onEditDevice(row.original.id)}
-                          disabled={isLoading}
+                          disabled={isLoading || row.original.is_deactivated}
                         >
                           <Pen className='size-4 text-brand-fill-outermost' />
                         </button>

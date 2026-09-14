@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
 import { SelectNetwork } from '@/containers/devices/containers/device-detail/components/general/components/activation-information/components/select-network';
 import CopiedButton from '@/containers/devices/containers/device-detail/components/general/components/copied-button';
 import {
@@ -35,7 +36,7 @@ import {
 import { useDevice } from '@/containers/devices/containers/device-detail/hooks/useDevice';
 import { useUpdateDevice } from '@/containers/devices/containers/device-detail/hooks/useUpdateDevice';
 
-import { countTwoDigitNumbers, formatValueEUI } from '@/utils';
+import { formatValueEUI, normalizeEUIInput } from '@/utils';
 
 import { NetworkServer } from '@/types';
 
@@ -43,37 +44,44 @@ const DEFAULT_VALUES = {
   devEui: '',
   joinEui: '',
   appKey: '',
+  description: '',
 };
 
-const ActivationInformation = () => {
+interface Props {
+  deviceId: string;
+}
+
+const ActivationInformation = ({ deviceId }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const form = useForm<ActivationInformationFormValues>({
     resolver: zodResolver(activationInformationFormSchema),
     defaultValues: DEFAULT_VALUES,
   });
   const [showAppKey, setShowAppKey] = useState(false);
-
+  const { reset } = form;
   const [networkServer, setNetworkServer] = useState<NetworkServer>();
 
   const t = useTranslations('device-detail');
   const {
     data: deviceDetail,
-    mutate: mutateDevice,
+    refetch: mutateDevice,
     isLoading: isLoadingDevice,
-  } = useDevice();
+  } = useDevice(deviceId);
 
   useEffect(() => {
     if (deviceDetail) {
-      form.reset({
-        devEui: formatValueEUI(deviceDetail.lorawan_device.dev_eui),
-        joinEui: formatValueEUI(deviceDetail.lorawan_device.join_eui),
-        appKey: deviceDetail.lorawan_device.app_key,
+      reset({
+        devEui: formatValueEUI(deviceDetail.lorawan_device?.dev_eui),
+        joinEui: formatValueEUI(deviceDetail.lorawan_device?.join_eui),
+        appKey: deviceDetail.lorawan_device?.app_key,
+        description: deviceDetail.description,
       });
-      setNetworkServer(deviceDetail.network_server);
+      setNetworkServer(deviceDetail.lorawan_device?.network_server);
     }
-  }, [deviceDetail]);
+  }, [deviceDetail, reset]);
 
-  const { trigger: updateDevice, isMutating: isUpdating } = useUpdateDevice();
+  const { mutateAsync: updateDevice, isPending: isUpdating } =
+    useUpdateDevice(deviceId);
 
   const onSubmit = async (data: ActivationInformationFormValues) => {
     const dirtyFields = Object.keys(form.formState.dirtyFields);
@@ -83,11 +91,13 @@ const ActivationInformation = () => {
             dev_eui: data.devEui.replace(/\s/g, ''),
             join_eui: data.joinEui.replace(/\s/g, ''),
             app_key: data.appKey,
+            description: data.description,
             network_server: networkServer,
           }
         : {
             join_eui: data.joinEui.replace(/\s/g, ''),
             app_key: data.appKey,
+            description: data.description,
             network_server: networkServer,
           },
     );
@@ -102,53 +112,49 @@ const ActivationInformation = () => {
     >,
     e: ChangeEvent<HTMLInputElement>,
   ) => {
-    const rawValue = e.target.value.replace(/\s/g, '').toUpperCase();
-    const binaryValue = formatValueEUI(rawValue);
-    const binaryLength = binaryValue.split(' ').length;
-    if (
-      /^[0-9A-Fa-f]*$/.test(rawValue) &&
-      countTwoDigitNumbers(binaryValue) <= 8 &&
-      binaryLength <= 8
-    ) {
-      field.onChange(formatValueEUI(rawValue));
+    const nextValue = normalizeEUIInput(e.target.value);
+    if (nextValue !== null) {
+      field.onChange(nextValue);
     }
   };
 
   const handleCancel = () => {
     setIsEditing(false);
     form.reset();
-    setNetworkServer(deviceDetail?.network_server);
+    setNetworkServer(deviceDetail?.lorawan_device?.network_server);
   };
 
   return (
     <Form {...form}>
       <form className='space-y-3' onSubmit={form.handleSubmit(onSubmit)}>
         <div className='flex items-center justify-between'>
-          <p className='text-lg font-semibold'>{t('activation_information')}</p>
+          <p className='text-lg font-semibold'>{t('general_information')}</p>
           {isEditing ? (
             <div className='flex items-center gap-1'>
               <Button
                 type='button'
                 size='sm'
                 variant='outline'
-                className='flex items-center gap-1'
                 onClick={handleCancel}
+                prefixCpn={<X className='size-4' />}
+                className='flex items-center gap-1'
               >
-                <X className='size-4' />
                 {t('cancel')}
               </Button>
               <Button
                 size='sm'
                 className='flex items-center gap-1'
                 loading={isUpdating}
+                prefixCpn={<Save className='size-4' />}
               >
-                <Save className='size-4' />
                 {t('save')}
               </Button>
             </div>
           ) : (
             <Button
-              className='flex items-center gap-1'
+              className='flex items-center gap-2'
+              size='sm'
+              variant='outline'
               onClick={() => setIsEditing(true)}
               type='button'
             >
@@ -164,7 +170,7 @@ const ActivationInformation = () => {
             name='devEui'
             render={({ field }) => (
               <FormItem>
-                <FormLabel className='text-xs text-brand-component-text-gray font-semibold'>
+                <FormLabel className='text-sm font-semibold text-brand-component-text-dark'>
                   {t('dev_eui')}
                 </FormLabel>
                 <div className='relative'>
@@ -172,7 +178,7 @@ const ActivationInformation = () => {
                     <Input
                       {...field}
                       readOnly={!isEditing}
-                      className='pl-9 pr-9 h-10'
+                      className='pl-9 pr-9'
                       onChange={(e) => handleChangeField(field, e)}
                     />
                   </FormControl>
@@ -189,7 +195,7 @@ const ActivationInformation = () => {
             name='joinEui'
             render={({ field }) => (
               <FormItem>
-                <FormLabel className='text-xs text-brand-component-text-gray font-semibold'>
+                <FormLabel className='text-sm font-semibold text-brand-component-text-dark'>
                   {t('join_eui')}
                 </FormLabel>
                 <div className='relative'>
@@ -197,7 +203,7 @@ const ActivationInformation = () => {
                     <Input
                       {...field}
                       readOnly={!isEditing}
-                      className='pr-9 h-10'
+                      className='pr-9'
                       onChange={(e) => handleChangeField(field, e)}
                     />
                   </FormControl>
@@ -213,8 +219,8 @@ const ActivationInformation = () => {
             name='appKey'
             render={({ field }) => (
               <FormItem>
-                <FormLabel className='text-xs text-brand-component-text-gray font-semibold'>
-                  AppKey
+                <FormLabel className='text-sm font-semibold text-brand-component-text-dark'>
+                  {t('app_key')}
                 </FormLabel>
                 <div className='relative'>
                   <FormControl>
@@ -224,17 +230,17 @@ const ActivationInformation = () => {
                       readOnly={!isEditing}
                       value={field.value}
                       onChange={(e) => field.onChange(e.target.value)}
-                      className='pl-9 pr-20 h-10'
+                      className='pl-9 pr-20'
                     />
                   </FormControl>
                   <span className='absolute left-2 top-1/2 -translate-y-1/2'>
                     <KeyRound className='size-4 text-brand-icon-gray' />
                   </span>
-                  <div className='absolute right-0.5 top-1/2 -translate-y-1/2 flex items-center gap-2 rounded-r-lg h-9'>
-                    <div className='rounded-r-lg bg-brand-component-fill-light h-full grid grid-cols-2 gap-0 text-brand-component-text-gray divide-x justify-center w-full border border-brand-component-stroke-dark-soft'>
+                  <div className='absolute right-0.5 top-1/2 -translate-y-1/2 flex items-center gap-2 rounded-r-lg h-8'>
+                    <div className='h-full grid grid-cols-2 gap-x-1 text-brand-component-text-gray justify-center w-full'>
                       <button
                         type='button'
-                        className='px-5'
+                        className='size-8 flex items-center justify-center rounded-lg bg-brand-component-fill-light border border-brand-component-stroke-dark-soft'
                         onClick={() => setShowAppKey((v) => !v)}
                       >
                         {showAppKey ? (
@@ -245,7 +251,7 @@ const ActivationInformation = () => {
                       </button>
                       <CopiedButton
                         value={field.value}
-                        className='text-brand-component-text-gray px-5'
+                        className='text-brand-component-text-gray rounded-lg bg-brand-component-fill-light border border-brand-component-stroke-dark-soft flex items-center justify-center'
                       />
                     </div>
                   </div>
@@ -256,14 +262,14 @@ const ActivationInformation = () => {
           />
         </div>
         <div className='space-y-3'>
-          <FormLabel className='text-xs text-brand-component-text-gray font-semibold'>
+          <FormLabel className='text-sm font-semibold text-brand-component-text-dark'>
             {t('integrated_api')}
           </FormLabel>
           <Card className='p-4 bg-brand-component-fill-dark-soft border-brand-component-stroke-dark-soft border'>
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-3'>
                 <div className='h-12 p-2 rounded-sm bg-brand-component-fill-light flex items-center'>
-                  {isLoadingDevice ? (
+                  {isLoadingDevice || !networkServer?.logo ? (
                     <Skeleton className='h-5 w-20' />
                   ) : (
                     <Image
@@ -291,6 +297,27 @@ const ActivationInformation = () => {
             </div>
           </Card>
         </div>
+        <FormField
+          control={form.control}
+          name='description'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className='text-sm font-semibold text-brand-component-text-dark'>
+                {t('description')}
+              </FormLabel>
+              <FormControl>
+                <Textarea
+                  rows={5}
+                  className='w-full rounded-xl border border-brand-component-stroke-dark-soft px-3 py-2 text-sm outline-none read-only:cursor-default read-only:bg-brand-component-fill-disabled read-only:text-brand-component-text-dark'
+                  placeholder='Device description'
+                  readOnly={!isEditing}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </form>
     </Form>
   );

@@ -4,7 +4,7 @@ export default async function AuthLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className='m-auto flex size-full h-screen flex-col items-center justify-center px-5 md:max-w-xl'>
+    <div className=' flex w-full h-screen flex-col items-center justify-center px-5 bg-brand-background-fill-surface'>
       {children}
     </div>
   );

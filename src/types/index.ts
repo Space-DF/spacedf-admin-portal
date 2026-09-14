@@ -1,6 +1,7 @@
 export * from './auth';
 export * from './device';
 export * from './global';
+export * from './monitoring';
 export * from './network-server';
 export * from './organization';
 export * from './space';

@@ -20,7 +20,7 @@ const WaitingAuth = (props: PropsWithChildren) => {
     return (
       <div
         className={cn(
-          'absolute inset-0 bg-white transition-all dark:bg-brand-fill-outermost z-10 flex flex-col items-center justify-center',
+          'absolute inset-0 bg-brand-background-fill-surface transition-all z-10 flex flex-col items-center justify-center',
         )}
       >
         <SpaceDFLogoFull width={300} height={64} className='mb-6' />

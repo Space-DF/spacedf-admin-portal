@@ -1,4 +1,4 @@
-import useSWRMutation from 'swr/mutation';
+import { useMutation } from '@tanstack/react-query';
 
 import apiClient from '@/lib/api-client';
 
@@ -10,9 +10,14 @@ interface SignUpPayload extends SignUpCredentials {
   otp: string;
 }
 
-const signUp = async (
-  url: string,
-  { arg }: { arg: SignUpPayload },
-): Promise<SignUpResponse> => apiClient.post<SignUpResponse>(url, arg);
+type SignUpError = {
+  response: { message?: string; detail?: string };
+};
 
-export const useSignUp = () => useSWRMutation('/api/auth/sign-up', signUp);
+const signUp = async (arg: SignUpPayload): Promise<SignUpResponse> =>
+  apiClient.post<SignUpResponse>('/api/auth/sign-up', arg);
+
+export const useSignUp = () =>
+  useMutation<SignUpResponse, SignUpError, SignUpPayload>({
+    mutationFn: signUp,
+  });

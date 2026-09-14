@@ -7,19 +7,57 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
   scrollClassName?: string;
   viewPortClassName?: string;
+  beforeTable?: React.ReactNode;
+  contentMinWidth?: number;
 }
 
 const Table = React.forwardRef<HTMLTableElement, TableProps>(
-  ({ className, scrollClassName, viewPortClassName, ...props }, ref) => (
+  (
+    {
+      className,
+      scrollClassName,
+      viewPortClassName,
+      beforeTable,
+      contentMinWidth,
+      style,
+      ...props
+    },
+    ref,
+  ) => (
     <ScrollArea
       className={cn('grid h-full w-full grid-cols-1', scrollClassName)}
       viewPortClassName={viewPortClassName}
     >
-      <table
-        ref={ref}
-        className={cn('w-full caption-bottom text-sm', className)}
-        {...props}
-      />
+      {beforeTable != null ? (
+        <div
+          className='w-full'
+          style={
+            contentMinWidth != null && contentMinWidth > 0
+              ? { minWidth: contentMinWidth }
+              : undefined
+          }
+        >
+          {beforeTable}
+          <table
+            ref={ref}
+            className={cn('w-full caption-bottom text-sm', className)}
+            style={{
+              ...(contentMinWidth != null && contentMinWidth > 0
+                ? { minWidth: contentMinWidth }
+                : {}),
+              ...style,
+            }}
+            {...props}
+          />
+        </div>
+      ) : (
+        <table
+          ref={ref}
+          className={cn('w-full caption-bottom text-sm', className)}
+          style={style}
+          {...props}
+        />
+      )}
       <ScrollBar orientation='horizontal' />
       <ScrollBar orientation='vertical' />
     </ScrollArea>

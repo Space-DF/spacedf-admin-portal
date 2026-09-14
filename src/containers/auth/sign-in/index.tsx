@@ -11,13 +11,25 @@ export default function SignInPage() {
   const t = useTranslations('auth');
   return (
     <WaitingAuth>
-      <div className='mx-auto my-10 flex size-full flex-col items-center justify-center px-5 md:max-w-xl'>
+      <div className='mx-auto my-10 flex w-full flex-col items-center px-5'>
         <SpaceDFLogoFull />
-        <p className='my-6 text-3xl font-semibold'>{t('sign_in_to_SpaceDF')}</p>
-        <AuthenticateWithGoogle />
-        <AuthenticateWithApple />
-        <Separator className='my-4 bg-brand-component-stroke-dark-soft dark:bg-brand-component-stroke-dark-soft' />
-        <SignInForm />
+
+        <div className='mt-6 flex w-full animate-opacity-display-effect flex-col items-center gap-6 rounded-2xl border border-brand-component-stroke-dark-soft bg-brand-background-fill-outermost p-6 max-w-[400px]'>
+          <p className='w-full text-center text-3xl font-semibold leading-[44px] text-brand-component-text-dark'>
+            {t('sign_in_to_SpaceDF')}
+          </p>
+
+          <div className='flex w-full flex-col gap-5'>
+            <div className='flex w-full flex-col gap-2'>
+              <AuthenticateWithGoogle />
+              <AuthenticateWithApple />
+            </div>
+
+            <Separator className='bg-brand-component-stroke-dark-soft dark:bg-brand-component-stroke-dark-soft' />
+
+            <SignInForm />
+          </div>
+        </div>
       </div>
     </WaitingAuth>
   );

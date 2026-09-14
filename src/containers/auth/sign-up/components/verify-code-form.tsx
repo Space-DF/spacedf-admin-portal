@@ -9,13 +9,13 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import { useShallow } from 'zustand/react/shallow';
 
+import { SpaceDFLogoFull } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import {
@@ -23,7 +23,6 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from '@/components/ui/input-otp';
-import { Separator } from '@/components/ui/separator';
 import ResendCodeBtn from '@/containers/auth/sign-up/components/resend-code-btn';
 import { SignUpCredentials } from '@/containers/auth/sign-up/components/sign-up-form/components/sign-up';
 import { useSignUp } from '@/containers/auth/sign-up/components/sign-up-form/components/sign-up/hooks/useSignUp';
@@ -39,7 +38,7 @@ const FormSchema = z.object({
 export default function VerifyCodeForm() {
   const t = useTranslations('auth');
   const rootAuth = useIdentityStore(useShallow((state) => state.rootAuth));
-  const { trigger: signUp, isMutating } = useSignUp();
+  const { mutateAsync: signUp, isPending: isMutating } = useSignUp();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -81,61 +80,74 @@ export default function VerifyCodeForm() {
   }
 
   return (
-    <div className='mx-auto flex size-full flex-col items-center justify-center px-5 md:max-w-xl h-screen'>
-      <p className='my-6 text-3xl font-semibold'>{t('sign_up_to_SpaceDF')}</p>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className='w-full space-y-4'
-        >
-          <FormField
-            control={form.control}
-            name='pin'
-            render={({ field }) => (
-              <FormItem className='space-y-4'>
-                <FormLabel>
-                  {t.rich('we_sent_a_code_to', {
-                    email: rootAuth[1],
-                    span: (chunk) => (
-                      <span className='font-semibold text-brand-text-dark'>
-                        {chunk}
-                      </span>
-                    ),
-                  })}
-                </FormLabel>
-                <FormControl>
-                  <InputOTP
-                    maxLength={6}
-                    pattern={REGEXP_ONLY_DIGITS}
-                    {...field}
-                  >
-                    <InputOTPGroup className='w-full gap-6'>
-                      {Array.from({ length: 6 }).map((_, index) => (
-                        <InputOTPSlot
-                          key={index}
-                          index={index}
-                          className='h-20 flex-1 rounded-md border-none bg-brand-component-fill-dark-soft text-2xl font-bold'
-                        />
-                      ))}
-                    </InputOTPGroup>
-                  </InputOTP>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button
-            type='submit'
-            className='h-12 w-full items-center gap-2 rounded-lg border-2 border-brand-component-stroke-dark bg-brand-component-fill-dark text-base font-semibold text-white shadow-sm dark:border-brand-component-stroke-light'
-            disabled={!isDirty || !isValid || isMutating}
-            loading={isMutating}
+    <div className='mx-auto my-10 flex w-full flex-col items-center px-5'>
+      <div className='flex w-full max-w-[400px] animate-opacity-display-effect flex-col items-center gap-6 rounded-2xl border border-brand-component-stroke-dark-soft bg-brand-background-fill-outermost p-6'>
+        <SpaceDFLogoFull className='h-9 w-auto text-brand-component-text-dark' />
+
+        <p className='w-full text-center text-3xl font-semibold leading-[44px] text-brand-component-text-dark'>
+          {t('sign_up_to_SpaceDF')}
+        </p>
+
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className='flex w-full flex-col gap-5'
           >
-            {t('continue')}
-          </Button>
-        </form>
-      </Form>
-      <Separator className='my-4 bg-brand-component-stroke-dark-soft dark:bg-brand-component-stroke-dark-soft' />
-      <ResendCodeBtn email={rootAuth[1]} />
+            <div className='flex flex-col gap-4'>
+              <p className='text-center text-[14px] font-medium text-brand-component-text-gray'>
+                {t.rich('we_sent_a_code_to', {
+                  email: rootAuth[1],
+                  span: (chunk) => (
+                    <span className='text-brand-component-text-dark'>
+                      {chunk}
+                    </span>
+                  ),
+                })}
+              </p>
+
+              <FormField
+                control={form.control}
+                name='pin'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <InputOTP
+                        maxLength={6}
+                        pattern={REGEXP_ONLY_DIGITS}
+                        {...field}
+                      >
+                        <InputOTPGroup className='w-full justify-center gap-2.5'>
+                          {Array.from({ length: 6 }).map((_, index) => (
+                            <InputOTPSlot
+                              key={index}
+                              index={index}
+                              className='size-9 rounded-xl border border-brand-component-stroke-dark-soft bg-brand-component-fill-light text-[14px] font-medium text-brand-component-text-dark ring-[color:color-mix(in_srgb,hsl(var(--primary))_40%,transparent)] first:rounded-l-xl last:rounded-r-xl'
+                            />
+                          ))}
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </FormControl>
+                    <FormMessage className='justify-center' />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className='flex flex-col gap-2'>
+              <Button
+                type='submit'
+                className='h-9 w-full gap-2 rounded-xl bg-brand-component-fill-dark text-[14px] font-semibold text-brand-component-text-light shadow-button-base hover:bg-brand-component-hover-dark'
+                disabled={!isDirty || !isValid || isMutating}
+                loading={isMutating}
+              >
+                {t('continue')}
+              </Button>
+
+              <ResendCodeBtn email={rootAuth[1]} />
+            </div>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 }

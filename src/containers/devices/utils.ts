@@ -12,6 +12,17 @@ export const getDeviceData = (
       join_eui: '',
       claim_code: '',
       app_key: '',
+      is_deactivated: false,
+      serial_number: '',
+      device_profile: {
+        id: '',
+        name: '',
+        manufacturer_name: '',
+        manufacturer_id: '',
+        logo: '',
+        key_feature: '',
+        device_type: '',
+      },
       network_server: {
         id: '',
         name: '',
@@ -25,11 +36,13 @@ export const getDeviceData = (
   return (
     devicePagination?.results?.map((device) => ({
       ...device,
-      dev_eui: device.lorawan_device.dev_eui,
-      join_eui: device.lorawan_device.join_eui,
-      claim_code: device.lorawan_device.claim_code,
-      app_key: device.lorawan_device.app_key,
-      network_server: device.network_server,
+      dev_eui: device.lorawan_device?.dev_eui,
+      join_eui: device.lorawan_device?.join_eui,
+      claim_code: device.claim_code,
+      app_key: device.lorawan_device?.app_key,
+      network_server: device.lorawan_device?.network_server,
+      device_profile: device.device_profile,
+      serial_number: device.api_device?.serial_number,
     })) || []
   );
 };

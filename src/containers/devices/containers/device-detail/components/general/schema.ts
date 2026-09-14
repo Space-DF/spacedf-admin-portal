@@ -1,19 +1,5 @@
 import { z } from 'zod';
 
-export const generalInformationFormSchema = z.object({
-  deviceId: z.string(),
-  createdAt: z.string(),
-  description: z
-    .string()
-    .max(500, 'Description is too long')
-    .optional()
-    .or(z.literal('')),
-});
-
-export type GeneralInformationFormValues = z.infer<
-  typeof generalInformationFormSchema
->;
-
 export const activationInformationFormSchema = z.object({
   devEui: z
     .string()
@@ -49,6 +35,11 @@ export const activationInformationFormSchema = z.object({
     .regex(/^[0-9A-Fa-f]{32}$/, {
       message: 'Value must be 32 hex characters',
     }),
+  description: z
+    .string()
+    .max(500, 'Description is too long')
+    .optional()
+    .or(z.literal('')),
 });
 
 export type ActivationInformationFormValues = z.infer<

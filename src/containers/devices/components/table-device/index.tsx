@@ -9,6 +9,8 @@ import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { cn } from '@/lib/utils';
+
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import {
@@ -21,7 +23,6 @@ import {
 } from '@/components/ui/table';
 import { useNetworkServer } from '@/containers/devices/components/add-device-modal/components/select-network-server/hooks/useNetworkServer';
 import {
-  EUIDevice,
   EuiDeviceTable,
   euiDeviceTableSchema,
 } from '@/containers/devices/components/add-device-modal/validator';
@@ -67,7 +68,8 @@ const TableDevice: React.FC<TableDeviceProps> = ({
   const { data: networkResults } = useNetworkServer('', 1);
   const t = useTranslations('organization');
 
-  const { trigger: updateDevice, isMutating: isUpdating } = useUpdateDevice();
+  const { mutateAsync: updateDevice, isPending: isUpdating } =
+    useUpdateDevice();
   const networkServers = networkResults?.results || [];
 
   const [editDeviceIds, setEditDeviceIds] = useState<string[]>([]);
@@ -83,9 +85,12 @@ const TableDevice: React.FC<TableDeviceProps> = ({
     formState: { defaultValues, dirtyFields },
     getValues,
     reset,
+    resetField,
+    setError,
   } = form;
 
-  const { trigger: deleteDevice, isMutating: isDeleting } = useDeleteDevice();
+  const { mutateAsync: deleteDevice, isPending: isDeleting } =
+    useDeleteDevice();
 
   const onEditDevice = useCallback((id: string) => {
     setEditDeviceIds((deviceIds) => {
@@ -107,10 +112,10 @@ const TableDevice: React.FC<TableDeviceProps> = ({
         currentIndex > -1 &&
         defaultValues?.eui?.[currentIndex]
       ) {
-        form.resetField(`eui.${currentIndex}`);
+        resetField(`eui.${currentIndex}`);
       }
     },
-    [defaultValues?.eui, onEditDevice],
+    [defaultValues?.eui, onEditDevice, resetField],
   );
 
   const handleSelectEditDevice = useCallback((id: string) => {
@@ -196,8 +201,8 @@ const TableDevice: React.FC<TableDeviceProps> = ({
               );
               if (deviceIndex !== -1) {
                 Object.keys(errorLora).forEach((key) => {
-                  form.setError(
-                    `eui.${deviceIndex}.${key as keyof EUIDevice['eui'][number]}`,
+                  setError(
+                    `eui.${deviceIndex}.${key as keyof EuiDeviceTable['eui'][number]}`,
                     {
                       message: errorLora[key][0],
                     },
@@ -211,16 +216,24 @@ const TableDevice: React.FC<TableDeviceProps> = ({
       await mutate();
       onEditDevice(id);
     },
-    [getDirtyValuesAtIndex, onEditDevice, mutate],
+    [
+      getValues,
+      getDirtyValuesAtIndex,
+      updateDevice,
+      mutate,
+      onEditDevice,
+      setError,
+    ],
   );
 
   useEffect(() => {
     reset({
       eui: devices.map((device) => ({
         ...device,
-        network_server: device.network_server.id,
-        dev_eui: formatValueEUI(device.dev_eui),
-        join_eui: formatValueEUI(device.join_eui),
+        device_model: device.device_profile?.id,
+        network_server: device.network_server?.id,
+        dev_eui: device.dev_eui ? formatValueEUI(device.dev_eui) : undefined,
+        join_eui: device.join_eui ? formatValueEUI(device.join_eui) : undefined,
       })),
     });
   }, [reset, devices]);
@@ -252,7 +265,7 @@ const TableDevice: React.FC<TableDeviceProps> = ({
                     return (
                       <TableHead
                         key={header.id}
-                        className='h-8 text-brand-component-text-gray text-xs font-semibold'
+                        className='h-8 text-brand-component-text-gray text-xs font-semibold px-2'
                         style={{ minWidth: header.column.getSize() }}
                       >
                         {header.isPlaceholder
@@ -273,6 +286,10 @@ const TableDevice: React.FC<TableDeviceProps> = ({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && 'selected'}
+                    className={cn(
+                      row.original.is_deactivated &&
+                        'bg-brand-background-fill-surface hover:bg-brand-background-fill-surface',
+                    )}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id} className='align-top p-2 py-1.5'>

@@ -4,3 +4,4 @@ export const PRODUCTION_SITE_URL =
   process.env.PRODUCTION_SITE_URL || 'spacedf.com';
 export const NEXT_PUBLIC_DASHBOARD_SPACEDF_DOMAIN =
   process.env.NEXT_PUBLIC_DASHBOARD_SPACEDF_DOMAIN || '';
+export const NEXT_PUBLIC_AUTH_API = process.env.NEXT_PUBLIC_AUTH_API || '';

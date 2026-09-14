@@ -1,8 +1,9 @@
-import useSWRMutation from 'swr/mutation';
+import { useMutation } from '@tanstack/react-query';
 
 import apiClient from '@/lib/api-client';
 
-const sendOtp = async (url: string, { arg }: { arg: string }) =>
-  apiClient.post(url, { email: arg });
-
-export const useSendOtp = () => useSWRMutation('/api/auth/send-otp', sendOtp);
+export const useSendOtp = () =>
+  useMutation({
+    mutationFn: (email: string) =>
+      apiClient.post('/api/auth/send-otp', { email }),
+  });

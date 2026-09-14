@@ -5,7 +5,7 @@ import { api } from '@/lib/api';
 import { getServerOrganization } from '@/utils';
 import { handleError } from '@/utils/error';
 
-import { Device, TableDevice } from '@/types';
+import { UpdateDeviceRequest } from '@/types';
 
 export const PATCH = async (
   req: NextRequest,
@@ -14,17 +14,25 @@ export const PATCH = async (
   const { id } = params;
   const organization = await getServerOrganization();
   try {
-    const body: TableDevice = await req.json();
-    const device: Partial<Device> = {
-      ...body,
-      lorawan_device: {
-        dev_eui: body.dev_eui,
-        join_eui: body.join_eui,
-        claim_code: body.claim_code,
-        app_key: body.app_key,
-      },
-      network_server: body.network_server,
+    const {
+      dev_eui,
+      join_eui,
+      app_key,
+      serial_number,
+      ...rest
+    }: UpdateDeviceRequest = await req.json();
+
+    const lorawanDevice = { dev_eui, join_eui, app_key };
+    const hasLorawanDevice = Object.values(lorawanDevice).some(
+      (value) => value !== undefined,
+    );
+
+    const device = {
+      ...rest,
+      ...(hasLorawanDevice ? { lorawan_device: lorawanDevice } : {}),
+      ...(serial_number !== undefined ? { api_device: { serial_number } } : {}),
     };
+
     const response = await api.patch(`/devices/${id}/`, device, {
       headers: {
         'X-Organization': organization,
@@ -37,7 +45,7 @@ export const PATCH = async (
 };
 
 export const DELETE = async (
-  req: NextRequest,
+  _: NextRequest,
   { params }: { params: { id: string } },
 ) => {
   const { id } = params;

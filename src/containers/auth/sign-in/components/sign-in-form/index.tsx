@@ -1,13 +1,14 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react';
 import { signIn } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
-import { useState, useTransition } from 'react';
+import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
+
+import { cn } from '@/lib/utils';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -18,11 +19,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { InputWithIcon } from '@/components/ui/input';
-import {
-  TypographyPrimary,
-  TypographySecondary,
-} from '@/components/ui/typography';
+import { Input, PasswordInput } from '@/components/ui/input';
 import { singInSchema } from '@/containers/auth/sign-in/components/sign-in-form/validator';
 
 import { Link, useRouter } from '@/i18n/routing';
@@ -31,14 +28,17 @@ import { ErrorCode } from '@/types/auth';
 
 export type SignInCredentials = z.infer<typeof singInSchema>;
 
+const textLinkClassName =
+  'flex h-9 items-center justify-center rounded-xl text-[14px] font-semibold text-brand-component-text-dark transition-colors hover:text-brand-component-text-dark-hover';
+
 const SignInForm = () => {
   const t = useTranslations('auth');
   const form = useForm<SignInCredentials>({
     resolver: zodResolver(singInSchema),
   });
-  const [isShowPassword, setIsShowPassword] = useState(false);
-  const [isAuthenticating, startAuthentication] = useTransition();
   const router = useRouter();
+  const [isAuthenticating, startAuthentication] = useTransition();
+
   const onSubmit = async (values: SignInCredentials) => {
     startAuthentication(async () => {
       try {
@@ -64,97 +64,83 @@ const SignInForm = () => {
   };
 
   return (
-    <div className='w-full animate-opacity-display-effect self-start'>
-      <TypographyPrimary className='text-sm font-medium'>
-        {t('or_continue_with_email_address')}
-      </TypographyPrimary>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className='flex w-full flex-col gap-5'
+      >
+        <div className='flex flex-col gap-4'>
+          <FormField
+            control={form.control}
+            name='email'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('email')}</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder={t('enter_your_email_address')}
+                    disabled={isAuthenticating}
+                    className='rounded-xl border-brand-component-stroke-dark-soft bg-brand-component-fill-light px-3 text-[14px] font-medium text-brand-component-text-dark shadow-none placeholder:text-brand-component-text-gray dark:bg-brand-component-fill-light dark:text-brand-component-text-dark'
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='mt-5'>
-          <div className='space-y-3'>
-            <FormField
-              control={form.control}
-              name='email'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className=''>Email</FormLabel>
-                  <FormControl>
-                    <InputWithIcon
-                      prefixCpn={<Mail size={16} />}
-                      {...field}
-                      placeholder='Email'
-                      className=''
-                      disabled={isAuthenticating}
-                    />
-                  </FormControl>
+          <FormField
+            control={form.control}
+            name='password'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('password')}</FormLabel>
+                <FormControl>
+                  <PasswordInput
+                    {...field}
+                    placeholder={t('enter_your_password')}
+                    disabled={isAuthenticating}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-                  <FormMessage className='' />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='password'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className=''>{t('password')}</FormLabel>
-                  <FormControl>
-                    <InputWithIcon
-                      type={isShowPassword ? 'text' : 'password'}
-                      prefixCpn={<LockKeyhole size={16} />}
-                      suffixCpn={
-                        <span
-                          className='cursor-pointer'
-                          onClick={() => setIsShowPassword(!isShowPassword)}
-                        >
-                          {isShowPassword ? (
-                            <Eye size={16} />
-                          ) : (
-                            <EyeOff size={16} />
-                          )}
-                        </span>
-                      }
-                      {...field}
-                      placeholder={t('password')}
-                      disabled={isAuthenticating}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className='mb-5 mt-4 flex items-center justify-end'>
+          <div className='flex items-center justify-end'>
             <Link
               href='/auth/forgot-password'
-              className='cursor-pointer text-xs font-semibold hover:underline'
+              className={cn(textLinkClassName, 'px-5')}
             >
               {t('forgot_password')}
             </Link>
           </div>
+        </div>
+
+        <div className='flex flex-col gap-2'>
           <Button
             type='submit'
-            className='mb-2 h-12 w-full items-center gap-2 rounded-lg border-2 border-brand-component-stroke-dark bg-brand-component-fill-dark font-semibold text-white shadow-sm dark:border-brand-component-stroke-light'
+            className='h-9 w-full gap-2 rounded-xl bg-brand-component-fill-dark text-[14px] font-semibold text-brand-component-text-light shadow-button-base hover:bg-brand-component-hover-dark'
             loading={isAuthenticating}
             disabled={isAuthenticating}
           >
             {t('sign_in')}
           </Button>
-        </form>
-      </Form>
-      <div className='mt-3.5 flex items-center justify-center gap-2 text-center text-sm'>
-        <TypographySecondary className='font-semibold text-brand-component-text-gray'>
-          {t('dont_have_an_account')}
-        </TypographySecondary>
-        <Link
-          className='text-gradiant cursor-pointer font-semibold hover:underline'
-          href='/auth/sign-up'
-        >
-          {t('sign_up')}
-        </Link>
-      </div>
-    </div>
+
+          <div className='flex items-center justify-center'>
+            <span className='text-[14px] font-medium text-brand-component-text-gray'>
+              {t('dont_have_an_account')}
+            </span>
+            <Link
+              href='/auth/sign-up'
+              className={cn(textLinkClassName, 'px-2')}
+            >
+              {t('sign_up')}
+            </Link>
+          </div>
+        </div>
+      </form>
+    </Form>
   );
 };
 

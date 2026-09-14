@@ -3,23 +3,28 @@
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
+import { cn } from '@/lib/utils';
+
 import { AppleIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 
-const AuthenticateWithApple = () => {
+const AuthenticateWithApple = ({ className }: { className?: string }) => {
   const t = useTranslations('auth');
+
   return (
-    <div className='mt-2 w-full animate-opacity-display-effect self-start'>
-      <Button
-        className='h-12 w-full items-center gap-2 rounded-lg border-2 border-brand-component-stroke-dark bg-brand-component-fill-dark font-semibold text-white shadow-sm dark:border-brand-component-stroke-light'
-        onClick={() => {
-          toast.success('Scheduled: Catch up');
-        }}
-      >
-        <AppleIcon />
-        {t('continue_with_provider', { provider: 'Apple' })}
-      </Button>
-    </div>
+    <Button
+      type='button'
+      className={cn(
+        'h-9 w-full gap-2 rounded-xl bg-brand-component-fill-dark text-[14px] font-semibold text-brand-component-text-light shadow-button-base hover:bg-brand-component-hover-dark',
+        className,
+      )}
+      onClick={() => {
+        toast.success('Scheduled: Catch up');
+      }}
+    >
+      <AppleIcon />
+      {t('continue_with_provider', { provider: 'Apple' })}
+    </Button>
   );
 };
 

@@ -17,7 +17,7 @@ interface Props {
   isDeleting?: boolean;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
-  setSelectedDeleteDeviceIndex: (index?: number) => void;
+  setSelectedDeleteDeviceIndex?: (index?: number) => void;
 }
 
 const DialogDeleteDevice: React.FC<Props> = ({
@@ -39,7 +39,7 @@ const DialogDeleteDevice: React.FC<Props> = ({
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
     if (!open) {
-      setSelectedDeleteDeviceIndex(undefined);
+      setSelectedDeleteDeviceIndex?.(undefined);
     }
   };
 

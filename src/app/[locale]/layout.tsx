@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { NextIntlClientProvider } from 'next-intl';
+import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 
 import '@/styles/globals.css';
@@ -9,8 +9,6 @@ import AppProvider from '@/components/providers';
 
 import { routing } from '@/i18n/routing';
 import { readSession } from '@/utils';
-
-import { Locale } from '@/types/global';
 
 export const metadata: Metadata = {
   title: 'SpaceDF - No-Code IoT Management Platform',
@@ -46,19 +44,18 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-  params: { locale },
+  params,
 }: Readonly<{
   children: React.ReactNode;
-  params: { locale: Locale };
+  params: Promise<{ locale: string }>;
 }>) {
+  const { locale } = await params;
   // Ensure that the incoming `locale` is valid
-  if (!routing.locales.includes(locale)) {
+  if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
 
-  const messages = await getMessages();
-
-  const session = await readSession();
+  const [messages, session] = await Promise.all([getMessages(), readSession()]);
 
   return (
     <html lang='en' suppressHydrationWarning>

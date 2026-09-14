@@ -1,25 +1,24 @@
 import { useTranslations } from 'next-intl';
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { cn } from '@/lib/utils';
 
 import { AddDeviceAuto, AddDeviceManual } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
+import {
+  stepAuto,
+  stepManual,
+} from '@/containers/devices/components/add-device-modal/constants';
 import { useAddDeviceModalStore } from '@/containers/devices/components/add-device-modal/store';
-
-enum AddDeviceMode {
-  Auto = 'auto',
-  Manual = 'manual',
-}
+import { AddDeviceMode } from '@/containers/devices/components/add-device-modal/types';
 
 interface BrandItemProps {
   image: React.ReactNode;
   title: string;
   description: string;
   value: AddDeviceMode;
-  currentValue: AddDeviceMode;
-  onClick: () => void;
+  onClick: (mode: AddDeviceMode) => void;
   isRecommended?: boolean;
   isComingSoon?: boolean;
 }
@@ -29,26 +28,23 @@ const BrandItem = ({
   title,
   description,
   value,
-  currentValue,
   onClick,
   isRecommended,
   isComingSoon,
 }: BrandItemProps) => {
   const handleSelectMode = () => {
     if (isComingSoon) return;
-    onClick();
+    onClick(value);
   };
 
   const t = useTranslations('organization');
   return (
     <div
       className={cn(
-        'rounded-lg p-0.5 relative bg-gradient-to-r duration-150 transition-transform',
+        'rounded-lg p-0.5 relative z-0 bg-gradient-to-r duration-150 transition-transform',
         {
-          'from-brand-very-light-blue to-[#CCBFFF] scale-105':
-            value === currentValue,
-          'hover:from-brand-very-light-blue hover:to-[#CCBFFF]':
-            value !== currentValue && !isComingSoon,
+          'hover:from-brand-very-light-blue hover:to-[#CCBFFF] hover:scale-105 hover:z-10':
+            !isComingSoon,
         },
       )}
       onClick={handleSelectMode}
@@ -83,30 +79,39 @@ const BrandItem = ({
 };
 
 const SelectMode = () => {
-  const { setSelectedMode, selectedMode } = useAddDeviceModalStore(
+  const { setSelectedMode, setStep, setStepIndex } = useAddDeviceModalStore(
     useShallow((state) => ({
       setSelectedMode: state.setSelectedMode,
-      selectedMode: state.selectedMode,
+      setStep: state.setStep,
+      setStepIndex: state.setStepIndex,
     })),
   );
 
+  const handleSelectMode = useCallback(
+    (mode: AddDeviceMode) => {
+      const steps = mode === AddDeviceMode.Auto ? stepAuto : stepManual;
+      setSelectedMode(mode);
+      setStepIndex(1);
+      setStep(steps[1]);
+    },
+    [setSelectedMode, setStep, setStepIndex],
+  );
+
   return (
-    <div className='grid grid-cols-2 gap-4 w-[600px]'>
+    <div className='grid grid-cols-2 gap-4 w-[600px] p-2'>
       <BrandItem
         image={<AddDeviceManual />}
         title='Manual'
         value={AddDeviceMode.Manual}
-        currentValue={selectedMode}
         description='Enter your device info by yourself'
-        onClick={() => setSelectedMode(AddDeviceMode.Manual)}
+        onClick={handleSelectMode}
       />
       <BrandItem
         image={<AddDeviceAuto />}
         title='Auto detect'
         value={AddDeviceMode.Auto}
-        currentValue={selectedMode}
         description='Take a picture of the device and the system will automatically detect it.'
-        onClick={() => setSelectedMode(AddDeviceMode.Auto)}
+        onClick={handleSelectMode}
         isRecommended
         isComingSoon
       />

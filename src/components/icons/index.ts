@@ -10,6 +10,7 @@ export * from './fav-icon';
 export * from './google-icon';
 export * from './info';
 export * from './info-outline';
+export * from './inventory';
 export * from './laptop';
 export * from './lock-outline';
 export * from './lorawan-device';

@@ -2,6 +2,7 @@
   "avatar": "Avatar",
   "first_name": "First Name",
   "last_name": "Last Name",
+  "email": "Email",
   "location": "Location",
   "company_name": "Company Name",
   "upload_new_image": "Upload New Image",
@@ -25,5 +26,7 @@
   "permanently_delete_account": "Permanently Delete Account",
   "email_not_match": "Email does not match",
   "update_user_profile": "Update user profile successfully",
-  "update_user_profile_failed": "Update user profile failed"
+  "update_user_profile_failed": "Update user profile failed",
+  "update_password_success": "Update password successfully",
+  "update_password_failed": "Update password failed, please check the current password and new password"
 }

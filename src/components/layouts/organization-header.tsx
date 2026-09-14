@@ -1,5 +1,4 @@
 'use client';
-import { useTranslations } from 'next-intl';
 import { Fragment } from 'react';
 
 import AccountMenu from '@/components/layouts/components/account-menu';
@@ -23,8 +22,6 @@ interface Props {
 }
 
 const OrganizationHeader = ({ title, items = [] }: Props) => {
-  const t = useTranslations('organization');
-
   return (
     <header className='-mx-10 -mt-6 flex items-center justify-between border-b border-brand-component-stroke-dark-soft bg-brand-background-fill-outermost px-10 py-3'>
       <Breadcrumb>
@@ -41,7 +38,7 @@ const OrganizationHeader = ({ title, items = [] }: Props) => {
               </BreadcrumbItem>
             </Fragment>
           ))}
-          <BreadcrumbSeparator />
+          {items.length > 0 && <BreadcrumbSeparator />}
           <BreadcrumbItem>
             <BreadcrumbPage className='text-body font-bold text-brand-component-text-dark'>
               {title}

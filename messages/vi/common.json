@@ -19,6 +19,8 @@
   "dark": "Tối",
   "general_settings": "Cài đặt chung",
   "sign_out": "Đăng xuất",
+  "settings": "Cài đặt",
+  "documentation": "Tài liệu",
   "get_started": "BẮT ĐẦU",
   "no_widget": "No widget",
   "viewing_dummy": "You're viewing dummy data. To customize and add your own data and device, please sign in!",
@@ -35,5 +37,13 @@
   "the_device_does_not_exist": "Thiết bị không tồn tại",
   "back_to_spacedf": "Quay lại SpaceDF",
   "oops_something_went_wrong": "Oops! Có lỗi xảy ra",
-  "powered_by": "Cung cấp bởi"
+  "powered_by": "Cung cấp bởi",
+  "select_color": "Chọn màu sắc",
+  "default": "Mặc định",
+  "organization_list": "Danh sách tổ chức",
+  "discard": "Hủy bỏ",
+  "save": "Lưu",
+  "meter_unit": "m",
+  "preview_data": "Dữ liệu xem trước",
+  "real_data": "Dữ liệu thực"
 }

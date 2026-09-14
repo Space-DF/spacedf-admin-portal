@@ -19,6 +19,8 @@
   "dark": "Dark",
   "general_settings": "General Settings",
   "sign_out": "Sign out",
+  "settings": "Settings",
+  "documentation": "Documentation",
   "get_started": "GET STARTED",
   "no_widget": "No widget",
   "viewing_dummy": "You're viewing dummy data. To customize and add your own data and device, please sign in!",
@@ -42,5 +44,13 @@
   "the_device_does_not_exist": "The device does not exist",
   "back_to_spacedf": "Back to SpaceDF",
   "oops_something_went_wrong": "Oops! Something went wrong",
-  "powered_by": "Powered by"
+  "powered_by": "Powered by",
+  "select_color": "Select color",
+  "default": "Default",
+  "organization_list": "Organization List",
+  "discard": "Discard",
+  "save": "Save",
+  "meter_unit": "m",
+  "preview_data": "Preview Data",
+  "real_data": "Real Data"
 }

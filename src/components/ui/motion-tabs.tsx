@@ -5,7 +5,10 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-import { MotionHighlight, MotionHighlightItem } from './motion-highlight';
+import {
+  MotionHighlight,
+  MotionHighlightItem,
+} from '@/components/ui/motion-highlight';
 
 type TabsContextType<T extends string> = {
   activeValue: T;
@@ -144,7 +147,7 @@ function TabsList({
         role='tablist'
         data-slot='tabs-list'
         className={cn(
-          'bg-muted text-muted-foreground inline-flex h-10 w-fit items-center justify-center rounded-lg p-[4px]',
+          'bg-muted text-brand-component-text-gray inline-flex h-10 w-fit items-center justify-center rounded-lg p-[4px]',
           className,
         )}
         {...props}
@@ -158,6 +161,7 @@ function TabsList({
 type TabsTriggerProps = HTMLMotionProps<'button'> & {
   value: string;
   children: React.ReactNode;
+  motionHighlightClassName?: string;
 };
 
 function TabsTrigger({
@@ -165,6 +169,7 @@ function TabsTrigger({
   value,
   children,
   className,
+  motionHighlightClassName,
   ...props
 }: TabsTriggerProps) {
   const { activeValue, handleValueChange, registerTrigger } = useTabs();
@@ -183,7 +188,11 @@ function TabsTrigger({
   }, [value, registerTrigger]);
 
   return (
-    <MotionHighlightItem value={value} className='size-full'>
+    <MotionHighlightItem
+      value={value}
+      className={cn('size-full', motionHighlightClassName)}
+      activeClassName={motionHighlightClassName}
+    >
       <motion.button
         ref={localRef}
         data-slot='tabs-trigger'
@@ -191,7 +200,7 @@ function TabsTrigger({
         onClick={() => handleValueChange(value)}
         data-state={activeValue === value ? 'active' : 'inactive'}
         className={cn(
-          'ring-offset-background focus-visible:ring-ring data-[state=active]:text-foreground z-[1] inline-flex size-full cursor-pointer items-center justify-center rounded-sm px-2 py-1 text-sm font-medium whitespace-nowrap transition-transform focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50',
+          'ring-offset-background focus-visible:ring-ring data-[state=active]:text-brand-component-text-dark z-[1] inline-flex size-full cursor-pointer items-center justify-center rounded-sm px-2 py-1 text-sm font-medium whitespace-nowrap transition-transform focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50',
           className,
         )}
         {...props}

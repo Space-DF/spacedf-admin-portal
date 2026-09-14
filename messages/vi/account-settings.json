@@ -2,6 +2,7 @@
   "avatar": "Ảnh đại diện",
   "first_name": "Tên",
   "last_name": "Họ",
+  "email": "Email",
   "location": "Địa chỉ",
   "company_name": "Tên công ty",
   "upload_new_image": "Tải lên ảnh mới",
@@ -25,5 +26,7 @@
   "permanently_delete_account": "Xóa vĩnh viễn tài khoản",
   "email_not_match": "Email không khớp",
   "update_user_profile": "Cập nhật thông tin người dùng thành công",
-  "update_user_profile_failed": "Cập nhật thông tin người dùng thất bại"
+  "update_user_profile_failed": "Cập nhật thông tin người dùng thất bại",
+  "update_password_success": "Cập nhật mật khẩu thành công",
+  "update_password_failed": "Cập nhật mật khẩu thất bại, vui lòng kiểm tra lại mật khẩu hiện tại và mật khẩu mới"
 }

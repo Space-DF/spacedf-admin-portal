@@ -7,15 +7,14 @@ import { getCookieServer } from '@/utils';
 
 interface Props {
   children: React.ReactNode;
-  params: Promise<{ slugName: string }>;
+  params: Promise<{ locale: string }>;
 }
 
-const OrganizationLayout = async ({ children, params }: Props) => {
-  const { slugName } = await params;
+const OrganizationLayout = async ({ children }: Props) => {
   const isOpenSidebar = await getCookieServer('sidebar_state', true);
   return (
     <SidebarProvider defaultOpen={isOpenSidebar}>
-      <OrganizationSidebar slugName={slugName} />
+      <OrganizationSidebar />
       <SidebarInset className='bg-brand-background-fill-surface'>
         <div className='mt-6'>
           <div className='mx-10'>{children}</div>

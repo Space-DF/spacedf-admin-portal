@@ -6,9 +6,9 @@ import { handleError } from '@/utils/error';
 
 export const GET = async (
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) => {
-  const { id } = params;
+  const { id } = await params;
   try {
     const response = await api.get(`/device-connector/${id}/test-connection`);
     return NextResponse.json(response);

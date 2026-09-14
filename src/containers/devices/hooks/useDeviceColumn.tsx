@@ -493,7 +493,7 @@ export const useDeviceColumn = (
                     ) : (
                       <>
                         <Link
-                          href={`/organizations/${slugName}/devices/${row.original.id}`}
+                          href={`/devices/${row.original.id}`}
                           className='border border-brand-component-stroke-dark-soft rounded-lg p-2 disabled:opacity-55'
                         >
                           <Eye className='size-4 text-brand-fill-outermost' />

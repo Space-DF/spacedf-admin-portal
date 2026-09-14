@@ -6,9 +6,9 @@ import { handleError } from '@/utils/error';
 
 export const DELETE = async (
   _: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) => {
-  const { id } = params;
+  const { id } = await params;
   try {
     await api.delete(`/device-connector/${id}`);
     return NextResponse.json({

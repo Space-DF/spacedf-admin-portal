@@ -20,9 +20,9 @@ const getDeviceDetail = async (
 const DeviceDetailPage = async ({
   params,
 }: {
-  params: { deviceId: string };
+  params: Promise<{ deviceId: string }>;
 }) => {
-  const { deviceId } = params;
+  const { deviceId } = await params;
   const organization = await getServerOrganization();
   try {
     const device = await getDeviceDetail(organization, deviceId);

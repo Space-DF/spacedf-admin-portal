@@ -1,5 +1,5 @@
 'use client';
-import { ChevronLeft, ChevronRight, LayoutGrid, Palette } from 'lucide-react';
+import { ChevronRight, LayoutGrid, Palette } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { cn } from '@/lib/utils';
@@ -10,7 +10,6 @@ import {
   SidebarSimpleIcon,
   Waves,
 } from '@/components/icons';
-import { Button } from '@/components/ui/button';
 import {
   Collapsible,
   CollapsibleContent,
@@ -25,7 +24,6 @@ import {
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarMenu,
   SidebarMenuItem,
@@ -44,11 +42,7 @@ import { getColorText, getShortName, textToHexColor } from '@/utils';
 
 import deviceIcon from '/public/images/device.svg';
 
-interface Props {
-  slugName: string;
-}
-
-const OrganizationSidebar = ({ slugName }: Props) => {
+const OrganizationSidebar = () => {
   const t = useTranslations('organization');
   const { data: organization, isLoading } = useOrganization();
 
@@ -57,8 +51,8 @@ const OrganizationSidebar = ({ slugName }: Props) => {
 
   const organizationName = organization?.name || '';
 
-  const brandCustomizationPath = `/organizations/${slugName}/white-label/brand-customization`;
-  const waterLevelPath = `/organizations/${slugName}/monitoring/water-level`;
+  const brandCustomizationPath = `/white-label/brand-customization`;
+  const waterLevelPath = `/monitoring/water-level`;
 
   const isWhiteLabelActive = pathname.includes(brandCustomizationPath);
 
@@ -167,7 +161,7 @@ const OrganizationSidebar = ({ slugName }: Props) => {
                 <SidebarItem
                   open={open}
                   label={t('device_hub')}
-                  href={`/organizations/${slugName}/devices`}
+                  href='/devices'
                   icon={deviceIcon}
                 />
                 {navMain.map((item) =>
@@ -295,24 +289,6 @@ const OrganizationSidebar = ({ slugName }: Props) => {
           </div>
         </SidebarContent>
       </div>
-      <SidebarFooter className='gap-3 border-r border-brand-component-stroke-dark-soft bg-background'>
-        <Button
-          variant='outline'
-          className={cn(
-            'rounded-xl h-9',
-            open ? 'py-3 w-full' : 'mx-auto w-9 p-0',
-          )}
-          asChild
-        >
-          <Link
-            href='/organizations'
-            className='font-medium flex items-center justify-center gap-x-1 text-brand-component-text-dark'
-          >
-            <ChevronLeft size={16} />
-            {open && t('back_to_organization_list')}
-          </Link>
-        </Button>
-      </SidebarFooter>
     </Sidebar>
   );
 };

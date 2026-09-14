@@ -9,9 +9,9 @@ import { UpdateDeviceRequest } from '@/types';
 
 export const PATCH = async (
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) => {
-  const { id } = params;
+  const { id } = await params;
   const organization = await getServerOrganization();
   try {
     const {
@@ -46,9 +46,9 @@ export const PATCH = async (
 
 export const DELETE = async (
   _: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) => {
-  const { id } = params;
+  const { id } = await params;
   try {
     const organization = await getServerOrganization();
     const response = await api.delete(`/devices/${id}/`, {
@@ -64,9 +64,9 @@ export const DELETE = async (
 
 export const GET = async (
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) => {
-  const { id } = params;
+  const { id } = await params;
   try {
     const organization = await getServerOrganization();
     const response = await api.get(`/devices/${id}/`, {

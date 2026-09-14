@@ -11,47 +11,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 's3-alpha-sig.figma.com',
+        hostname: '**',
       },
       {
-        protocol: 'https',
-        hostname: 'my-bucketprofile.s3.amazonaws.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'my-bucketprofile.s3.us-east-1.amazonaws.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'flagcdn.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'img.freepik.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'github.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'avatars.githubusercontent.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'www.chirpstack.de',
-      },
-      {
-        protocol: 'https',
-        hostname: 'upload.wikimedia.org',
-      },
-      {
-        protocol: 'https',
-        hostname: 'd3f53s68dquwpy.cloudfront.net',
-      },
-      {
-        protocol: 'https',
-        hostname: 'spacedf-s3-1f841081-c8e98ef7bb21.s3.amazonaws.com',
+        protocol: 'http',
+        hostname: '**',
       },
     ],
   },

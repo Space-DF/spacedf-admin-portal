@@ -23,7 +23,7 @@ const RemoveDeviceTab = ({ deviceId }: Props) => {
   const router = useRouter();
   const handleDeleteDevice = async () => {
     await deleteDevice({ id: deviceId });
-    router.push(`/organizations/${slugName}/devices`);
+    router.push(`/${slugName}/devices`);
   };
 
   return (

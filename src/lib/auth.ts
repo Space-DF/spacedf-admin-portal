@@ -37,7 +37,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             '/bootstrap/auth/login',
             credentials,
           );
-          setServerSession(
+          await setServerSession(
             'default_organization',
             response.default_organization,
           );

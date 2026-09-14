@@ -1,4 +1,3 @@
-import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 
@@ -18,7 +17,8 @@ export default async function middleware(request: NextRequest) {
 
   if (PUBLIC_FILE.test(url.pathname) || url.pathname.includes('_next')) return;
 
-  const defaultLocale = (cookies().get('NEXT_LOCALE')?.value || 'en') as Locale;
+  const defaultLocale = (request.cookies.get('NEXT_LOCALE')?.value ||
+    'en') as Locale;
 
   const pathname = request.nextUrl.pathname;
   const pathnameSegments = pathname.split('/').filter(Boolean);

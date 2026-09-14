@@ -1,6 +1,5 @@
 'use client';
 
-import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
@@ -23,7 +22,6 @@ export default function DeviceDetail({ deviceServerData }: Props) {
   const tOrganization = useTranslations('organization');
   const isDeviceWaterLevel =
     deviceServerData.device_profile.key_feature === 'water_depth';
-  const { slugName } = useParams<{ slugName: string }>();
   const deviceId = deviceServerData.id;
 
   const tabs = useMemo(
@@ -54,7 +52,7 @@ export default function DeviceDetail({ deviceServerData }: Props) {
         items={[
           {
             label: tOrganization('device_hub'),
-            href: `/organizations/${slugName}/devices`,
+            href: `/devices`,
           },
         ]}
       />

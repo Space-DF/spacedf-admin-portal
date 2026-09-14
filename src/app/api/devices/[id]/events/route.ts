@@ -22,7 +22,7 @@ const generateMockEvents = (count: number = 11) => {
 
 export const GET = async (
   _: NextRequest,
-  { params: _params }: { params: { id: string } },
+  { params: _params }: { params: Promise<{ id: string }> },
 ) => {
   const mockEvents = generateMockEvents(11);
 

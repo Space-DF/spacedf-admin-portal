@@ -1,5 +1,4 @@
 'use client';
-import { House } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Fragment } from 'react';
 
@@ -30,18 +29,8 @@ const OrganizationHeader = ({ title, items = [] }: Props) => {
     <header className='-mx-10 -mt-6 flex items-center justify-between border-b border-brand-component-stroke-dark-soft bg-brand-background-fill-outermost px-10 py-3'>
       <Breadcrumb>
         <BreadcrumbList className='gap-0 sm:gap-0'>
-          <BreadcrumbItem>
-            <BreadcrumbLink
-              href='/organizations'
-              className='flex items-center gap-x-1 text-body font-medium text-brand-component-text-gray-fixed'
-            >
-              <House className='size-4' />
-              {t('organization_list')}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
           {items.map((item) => (
             <Fragment key={item.href}>
-              <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink
                   href={item.href}

@@ -8,9 +8,9 @@ import { Response, Trip } from '@/types';
 
 export async function GET(
   _: NextRequest,
-  { params }: { params: { deviceId: string } },
+  { params }: { params: Promise<{ deviceId: string }> },
 ) {
-  const { deviceId } = params;
+  const { deviceId } = await params;
   try {
     const trips: Response<Trip> = await api.get(
       `/trips/?limit=1&offset=0&space_device__device_id=${deviceId}`,

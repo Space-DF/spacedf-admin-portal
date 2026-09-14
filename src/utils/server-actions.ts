@@ -6,11 +6,12 @@ import { decode } from 'next-auth/jwt';
 import { NEXTAUTH_SECRET } from '@/shared/env';
 import { isJsonString } from '@/utils';
 
-export const getCookieServer = <TDefaultValue = unknown>(
+export const getCookieServer = async <TDefaultValue = unknown>(
   key: string,
   defaultValue: TDefaultValue,
 ) => {
-  const cookie = cookies().get(key);
+  const cookieStore = await cookies();
+  const cookie = cookieStore.get(key);
 
   if (cookie)
     return isJsonString(cookie.value)
@@ -25,8 +26,8 @@ export const getServerOrganization = async () => {
   return (cookieStore.get('default_organization')?.value || '') as string;
 };
 
-export const getServerSpace = () => {
-  const cookieStore = cookies();
+export const getServerSpace = async () => {
+  const cookieStore = await cookies();
   return (cookieStore.get('space')?.value || '') as string;
 };
 
@@ -38,7 +39,7 @@ const SESSION_SALT = SESSION_SECURE
 export async function readSession(): Promise<Session | null> {
   try {
     // This handles chunked cookies (.0, .1, .2, etc.) for large sessions
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const allCookies = cookieStore.getAll();
 
     // Find the main session cookie or chunked cookies
@@ -77,6 +78,6 @@ export async function readSession(): Promise<Session | null> {
 }
 
 export async function setServerSession(key: string, value: string) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   cookieStore.set(key, value);
 }

@@ -41,6 +41,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
     'device-detail': {
       ...(await import(`../../messages/${locale}/device-detail.json`)).default,
     },
+    monitoring: {
+      ...(await import(`../../messages/${locale}/monitoring.json`)).default,
+    },
   };
 
   // Return merged messages

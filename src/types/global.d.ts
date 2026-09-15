@@ -13,6 +13,7 @@ import dashboard from '../../messages/en/dashboard.json';
 import generalSettings from '../../messages/en/general-settings.json';
 import landingPage from '../../messages/en/landing-page.json';
 import languageName from '../../messages/en/language-name.json';
+import monitoring from '../../messages/en/monitoring.json';
 import onboarding from '../../messages/en/onboarding.json';
 import organization from '../../messages/en/organization.json';
 import signUp from '../../messages/en/sign-up.json';
@@ -31,6 +32,7 @@ type Messages = {
   space: typeof space;
   organization: typeof organization;
   landingPage: typeof landingPage;
+  monitoring: typeof monitoring;
   // Create a new type by combining all message types
 };
 

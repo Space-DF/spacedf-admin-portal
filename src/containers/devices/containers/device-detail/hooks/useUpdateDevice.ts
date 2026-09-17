@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import queryString from 'query-string';
 import { toast } from 'sonner';
@@ -14,7 +13,6 @@ export const useUpdateDevice = (
   deviceId: string,
   { successMessage }: { successMessage?: string } = {},
 ) => {
-  const { slugName } = useParams<{ slugName: string }>();
   const t = useTranslations('device-detail');
   const queryClient = useQueryClient();
   return useMutation({
@@ -22,7 +20,6 @@ export const useUpdateDevice = (
       apiClient.patch(
         queryString.stringifyUrl({
           url: `/api/devices/${deviceId}`,
-          query: { slugName },
         }),
         {
           ...arg,
@@ -32,7 +29,7 @@ export const useUpdateDevice = (
     onSuccess: () => {
       toast.success(successMessage ?? t('update_device_success'));
       queryClient.invalidateQueries({
-        queryKey: [...DEVICE_QUERY_KEY, deviceId, slugName],
+        queryKey: [...DEVICE_QUERY_KEY, deviceId],
       });
     },
     onError: () => {

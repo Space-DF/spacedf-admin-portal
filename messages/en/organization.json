@@ -43,7 +43,7 @@
   "name": "Name",
   "country": "Country",
   "choose_connect": "Choose the conectivity type of your device.",
-  "lorawan_connectivity_description": "Choose from 18 LoRaWAN networks",
+  "lorawan_connectivity_description": "Choose from 3 LoRaWAN networks",
   "api_connectivity_description": "Generic API device with support for MQTT and HTTP connectivity",
   "close": "Close",
   "next": "Next",

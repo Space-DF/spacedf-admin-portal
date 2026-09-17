@@ -18,6 +18,7 @@ import onboarding from '../../messages/en/onboarding.json';
 import organization from '../../messages/en/organization.json';
 import signUp from '../../messages/en/sign-up.json';
 import space from '../../messages/en/space.json';
+import whiteLabel from '../../messages/en/white-label.json';
 
 type Locale = (typeof locales)[number];
 
@@ -33,6 +34,7 @@ type Messages = {
   organization: typeof organization;
   landingPage: typeof landingPage;
   monitoring: typeof monitoring;
+  'white-label': typeof whiteLabel;
   // Create a new type by combining all message types
 };
 

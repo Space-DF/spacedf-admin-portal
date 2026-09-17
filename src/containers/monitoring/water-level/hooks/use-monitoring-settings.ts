@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import queryString from 'query-string';
 import { toast } from 'sonner';
 
 import apiClient from '@/lib/api-client';
@@ -10,23 +9,15 @@ import { MONITORING_QUERY_KEY } from '@/constants/query-keys';
 
 import { MonitoringSetting, UpdateMonitoringPayload } from '@/types';
 
-const fetchMonitoringSettings = (slugName: string) =>
-  apiClient.get<MonitoringSetting[]>(
-    queryString.stringifyUrl({
-      url: '/api/organizations/monitoring',
-      query: { slugName },
-    }),
-  );
+const fetchMonitoringSettings = () =>
+  apiClient.get<MonitoringSetting[]>('/api/organizations/monitoring');
 
 export const useGetWaterLevelSetting = () => {
-  const { slugName } = useParams<{ slugName: string }>();
-
   return useQuery<MonitoringSetting[], Error, MonitoringSetting | undefined>({
-    queryKey: [...MONITORING_QUERY_KEY, slugName],
-    queryFn: async () => fetchMonitoringSettings(slugName),
+    queryKey: [...MONITORING_QUERY_KEY],
+    queryFn: async () => fetchMonitoringSettings(),
     select: (settings) =>
       settings.find((setting) => setting.type === 'water_level'),
-    enabled: !!slugName,
   });
 };
 
@@ -42,15 +33,12 @@ export const useUpdateMonitoringSetting = () => {
   >({
     mutationFn: async ({ id, data }) =>
       apiClient.patch<MonitoringSetting>(
-        queryString.stringifyUrl({
-          url: `/api/organizations/monitoring/${id}`,
-          query: { slugName },
-        }),
+        `/api/organizations/monitoring/${id}`,
         data,
       ),
     onSuccess: (updated) => {
       queryClient.setQueryData<MonitoringSetting[]>(
-        [...MONITORING_QUERY_KEY, slugName],
+        [...MONITORING_QUERY_KEY],
         (settings) =>
           settings?.map((setting) =>
             setting.id === updated.id ? updated : setting,

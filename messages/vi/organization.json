@@ -43,7 +43,7 @@
   "name": "Tên",
   "country": "Quốc gia",
   "choose_connect": "Chọn loại kết nội cho thiết bị của bạn.",
-  "lorawan_connectivity_description": "Chọn từ 18 mạng LoRaWAN",
+  "lorawan_connectivity_description": "Chọn từ 3 mạng LoRaWAN",
   "api_connectivity_description": "Thiết bị API tổng quát, hỗ trợ kết nối MQTT và HTTP",
   "close": "Đóng",
   "next": "Tiếp tục",

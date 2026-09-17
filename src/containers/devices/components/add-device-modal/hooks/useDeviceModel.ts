@@ -1,5 +1,4 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useParams } from 'next/navigation';
 import queryString from 'query-string';
 
 import apiClient from '@/lib/api-client';
@@ -12,18 +11,15 @@ import { Response } from '@/types/global';
 const DEFAULT_LIMIT = 8;
 
 export const useDeviceModel = (search = '', limit = DEFAULT_LIMIT) => {
-  const { slugName } = useParams<{ slugName: string }>();
-
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
     useInfiniteQuery({
-      queryKey: [...DEVICE_MODELS_QUERY_KEY, { search, slugName, limit }],
+      queryKey: [...DEVICE_MODELS_QUERY_KEY, { search, limit }],
       queryFn: ({ pageParam }) =>
         apiClient.get<Response<DeviceModel>>(
           queryString.stringifyUrl({
             url: '/api/device-models',
             query: {
               search,
-              slugName,
               limit,
               offset: pageParam,
             },

@@ -1,5 +1,4 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { useParams } from 'next/navigation';
 import queryString from 'query-string';
 import { useMemo } from 'react';
 
@@ -20,7 +19,6 @@ export const useDevices = (
   location?: boolean,
   key_feature?: string,
 ) => {
-  const { slugName } = useParams<{ slugName: string }>();
   const deviceNameDebounced = useDebounce(search);
   return useQuery<Response<Device>>({
     queryKey: [
@@ -30,7 +28,6 @@ export const useDevices = (
         status,
         pageIndex,
         limit,
-        slugName,
         location,
         key_feature,
       },
@@ -44,7 +41,6 @@ export const useDevices = (
             status,
             pageIndex,
             limit,
-            slugName,
             location,
             key_feature,
           },
@@ -59,7 +55,6 @@ export const useInfiniteDevices = (
   location?: boolean,
   key_feature?: string,
 ) => {
-  const { slugName } = useParams<{ slugName: string }>();
   const deviceNameDebounced = useDebounce(search);
 
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
@@ -70,7 +65,6 @@ export const useInfiniteDevices = (
           infinite: true,
           search: deviceNameDebounced,
           limit,
-          slugName,
           location,
           key_feature,
         },
@@ -83,7 +77,6 @@ export const useInfiniteDevices = (
               search: deviceNameDebounced,
               pageIndex: pageParam,
               limit,
-              slugName,
               location,
               key_feature,
             },

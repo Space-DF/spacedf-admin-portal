@@ -86,8 +86,8 @@ const WaterLevel = () => {
   const handleDiscard = () => reset();
 
   const handleSave = form.handleSubmit((formValues) => {
+    console.log({ setting });
     if (!setting) return;
-
     updateSetting(
       { id: setting.id, data: toMonitoringPayload(formValues) },
       { onSuccess: () => reset(formValues) },

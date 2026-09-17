@@ -44,6 +44,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
     monitoring: {
       ...(await import(`../../messages/${locale}/monitoring.json`)).default,
     },
+    'white-label': {
+      ...(await import(`../../messages/${locale}/white-label.json`)).default,
+    }
   };
 
   // Return merged messages

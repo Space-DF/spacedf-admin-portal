@@ -9,4 +9,3 @@ export * from './organization';
 export * from './space';
 export * from './trip';
 export * from './user';
-

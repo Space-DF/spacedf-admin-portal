@@ -11,10 +11,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { cn } from '@/lib/utils';
 
 import { FavIcon } from '@/components/icons';
-import {
-  PreferencesModeDark,
-  PreferencesModeLight,
-} from '@/components/icons';
+import { PreferencesModeDark, PreferencesModeLight } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {

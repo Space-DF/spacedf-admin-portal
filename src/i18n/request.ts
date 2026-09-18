@@ -46,7 +46,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     },
     'white-label': {
       ...(await import(`../../messages/${locale}/white-label.json`)).default,
-    }
+    },
   };
 
   // Return merged messages

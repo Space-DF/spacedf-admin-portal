@@ -1,12 +1,14 @@
-import useSWR from 'swr';
+import { useQuery } from '@tanstack/react-query';
 
 import apiClient from '@/lib/api-client';
 
+import { ORGANIZATION_QUERY_KEY } from '@/constants/query-keys';
+
 import { Organization } from '@/types/organization';
 
-const getOrganization = async (url: string) => {
-  return apiClient.get<Organization>(url);
+export const useOrganization = () => {
+  return useQuery<Organization, Error>({
+    queryKey: [...ORGANIZATION_QUERY_KEY],
+    queryFn: () => apiClient.get<Organization>(`/api/console/organization`),
+  });
 };
-
-export const useOrganization = () =>
-  useSWR<Organization>(`/api/console/organization`, getOrganization);

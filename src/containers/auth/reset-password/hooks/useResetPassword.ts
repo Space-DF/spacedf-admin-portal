@@ -1,16 +1,14 @@
+import { useMutation } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
-import useSWRMutation from 'swr/mutation';
 
 import apiClient from '@/lib/api-client';
-const fetcher = async (
-  url: string,
-  { arg }: { arg: { token: string; password: string } },
-) => apiClient.post(url, arg);
 
 export const useResetPassword = () => {
   const t = useTranslations('auth');
-  return useSWRMutation('/api/auth/forget-password', fetcher, {
+  return useMutation({
+    mutationFn: (arg: { token: string; password: string }) =>
+      apiClient.post('/api/auth/forget-password', arg),
     onSuccess: () => {
       toast.success(t('password_reset_successful'));
     },

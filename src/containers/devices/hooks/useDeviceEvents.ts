@@ -1,16 +1,15 @@
-import useSWR from 'swr';
+import { useQuery } from '@tanstack/react-query';
 
 import apiClient from '@/lib/api-client';
 
+import { DEVICE_EVENTS_QUERY_KEY } from '@/constants/query-keys';
+
 import { Checkpoint } from '@/types';
 
-export async function getDeviceEvents(url: string) {
-  return apiClient.get<Checkpoint[]>(url);
-}
-
 export const useDeviceEvents = (deviceId?: string) => {
-  return useSWR<Checkpoint[]>(
-    deviceId ? `/api/trip/${deviceId}` : null,
-    getDeviceEvents,
-  );
+  return useQuery<Checkpoint[]>({
+    queryKey: [...DEVICE_EVENTS_QUERY_KEY, deviceId],
+    queryFn: () => apiClient.get<Checkpoint[]>(`/api/trip/${deviceId}`),
+    enabled: !!deviceId,
+  });
 };
